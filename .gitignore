@@ -1,0 +1,6 @@
+.idea
+*.iml
+*.yml
+/target/
+/src/main/resources/application.properties
+/src/main/resources/mybatis-generator-config.xml
