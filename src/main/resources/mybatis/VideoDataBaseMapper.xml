@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jadlokin.test.mapper.VideoDataBaseMapper">
-  <resultMap id="BaseResultMap" type="com.jadlokin.test.entity.VideoData">
+<mapper namespace="com.jadlokin.test.webmagic.mapper.VideoDataBaseMapper">
+  <resultMap id="BaseResultMap" type="com.jadlokin.test.webmagic.entity.VideoData">
     <id column="av" jdbcType="NUMERIC" property="av" />
     <id column="issue" jdbcType="NUMERIC" property="issue" />
     <result column="view" jdbcType="NUMERIC" property="view" />
@@ -27,7 +27,7 @@
     where av = #{av,jdbcType=NUMERIC}
       and issue = #{issue,jdbcType=NUMERIC}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoData" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoData" useGeneratedKeys="true">
     insert into video_data (av, issue, [view], 
       reply, favorite, coin, 
       page, point, [rank])
@@ -35,7 +35,7 @@
       #{reply,jdbcType=NUMERIC}, #{favorite,jdbcType=NUMERIC}, #{coin,jdbcType=NUMERIC}, 
       #{page,jdbcType=NUMERIC}, #{point,jdbcType=NUMERIC}, #{rank,jdbcType=NUMERIC})
   </insert>
-  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoData" useGeneratedKeys="true">
+  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoData" useGeneratedKeys="true">
     insert into video_data
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="av != null">
@@ -96,7 +96,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.entity.VideoData">
+  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.webmagic.entity.VideoData">
     update video_data
     <set>
       <if test="view != null">
@@ -124,7 +124,7 @@
     where av = #{av,jdbcType=NUMERIC}
       and issue = #{issue,jdbcType=NUMERIC}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.entity.VideoData">
+  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.webmagic.entity.VideoData">
     update video_data
     set [view] = #{view,jdbcType=NUMERIC},
       reply = #{reply,jdbcType=NUMERIC},

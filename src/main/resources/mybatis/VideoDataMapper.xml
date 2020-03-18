@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jadlokin.test.mapper.VideoDataMapper">
-  <select id="selectAllForPage" resultMap="com.jadlokin.test.mapper.VideoDataBaseMapper.BaseResultMap">
+<mapper namespace="com.jadlokin.test.webmagic.mapper.VideoDataMapper">
+  <select id="selectAllForPage" resultMap="com.jadlokin.test.webmagic.mapper.VideoDataBaseMapper.BaseResultMap">
     select av, [page]
     from video_data
   </select>
-  <select id="selectAllDisparityBetweenTwoIssue" resultMap="com.jadlokin.test.mapper.VideoDataBaseMapper.BaseResultMap">
+  <select id="selectAllDisparityBetweenTwoIssue" resultMap="com.jadlokin.test.webmagic.mapper.VideoDataBaseMapper.BaseResultMap">
     select
       new.av as av,
       new.[view] - case when old.[view] is NULL then 0 else old.[view] end as [view],
@@ -18,7 +18,7 @@
       (select * from video_data where issue = 1) as new on old.av = new.av
 
   </select>
-  <select id="selectAllForIssue" resultMap="com.jadlokin.test.mapper.VideoDataBaseMapper.BaseResultMap">
+  <select id="selectAllForIssue" resultMap="com.jadlokin.test.webmagic.mapper.VideoDataBaseMapper.BaseResultMap">
     select av, issue
     from video_data
   </select>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jadlokin.test.mapper.VideoTagBaseMapper">
-  <resultMap id="BaseResultMap" type="com.jadlokin.test.entity.VideoTag">
+<mapper namespace="com.jadlokin.test.webmagic.mapper.VideoTagBaseMapper">
+  <resultMap id="BaseResultMap" type="com.jadlokin.test.webmagic.entity.VideoTag">
     <id column="av" jdbcType="NUMERIC" property="av" />
     <result column="name" jdbcType="NVARCHAR" property="name" />
     <result column="tag1" jdbcType="NVARCHAR" property="tag1" />
@@ -39,7 +39,7 @@
     delete from touhouTag
     where av = #{av,jdbcType=NUMERIC}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoTag" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoTag" useGeneratedKeys="true">
     insert into touhouTag (av, [name], tag1, 
       tag2, tag3, tag4, 
       tag5, tag6, tag7, 
@@ -57,7 +57,7 @@
       #{tag17,jdbcType=NVARCHAR}, #{tag18,jdbcType=NVARCHAR}, #{tag19,jdbcType=NVARCHAR}, 
       #{tag20,jdbcType=NVARCHAR})
   </insert>
-  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoTag" useGeneratedKeys="true">
+  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoTag" useGeneratedKeys="true">
     insert into touhouTag
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="av != null">
@@ -196,7 +196,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.entity.VideoTag">
+  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.webmagic.entity.VideoTag">
     update touhouTag
     <set>
       <if test="name != null">
@@ -265,7 +265,7 @@
     </set>
     where av = #{av,jdbcType=NUMERIC}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.entity.VideoTag">
+  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.webmagic.entity.VideoTag">
     update touhouTag
     set [name] = #{name,jdbcType=NVARCHAR},
       tag1 = #{tag1,jdbcType=NVARCHAR},

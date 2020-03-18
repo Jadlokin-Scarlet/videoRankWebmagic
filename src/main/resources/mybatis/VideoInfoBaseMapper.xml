@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jadlokin.test.mapper.VideoInfoBaseMapper">
-  <resultMap id="BaseResultMap" type="com.jadlokin.test.entity.VideoInfo">
+<mapper namespace="com.jadlokin.test.webmagic.mapper.VideoInfoBaseMapper">
+  <resultMap id="BaseResultMap" type="com.jadlokin.test.webmagic.entity.VideoInfo">
     <id column="av" jdbcType="NUMERIC" property="av" />
     <result column="name" jdbcType="NVARCHAR" property="name" />
     <result column="img" jdbcType="NVARCHAR" property="img" />
@@ -25,7 +25,7 @@
     delete from video_info
     where av = #{av,jdbcType=NUMERIC}
   </delete>
-  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoInfo" useGeneratedKeys="true">
+  <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
     insert into video_info (av, [name], img, 
       [type], [owner], copyright, 
       pub_time, start_time, is_delete
@@ -35,7 +35,7 @@
       #{pubTime,jdbcType=NVARCHAR}, #{startTime,jdbcType=NUMERIC}, #{isDelete,jdbcType=BIT}
       )
   </insert>
-  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.entity.VideoInfo" useGeneratedKeys="true">
+  <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
     insert into video_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="av != null">
@@ -96,7 +96,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.entity.VideoInfo">
+  <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo">
     update video_info
     <set>
       <if test="name != null">
@@ -126,7 +126,7 @@
     </set>
     where av = #{av,jdbcType=NUMERIC}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.entity.VideoInfo">
+  <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo">
     update video_info
     set [name] = #{name,jdbcType=NVARCHAR},
       img = #{img,jdbcType=NVARCHAR},
