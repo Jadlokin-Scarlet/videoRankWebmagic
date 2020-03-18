@@ -13,7 +13,7 @@ import java.time.ZoneId;
 
 @Slf4j
 @SpringBootApplication
-@MapperScan("com.jadlokin.test.mapper")
+@MapperScan("com.jadlokin.test.webmagic.mapper")
 public class StartApplication {
 
 	private final Spider spider;
@@ -31,7 +31,7 @@ public class StartApplication {
 	@PostConstruct
 	public void run() {
 		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
-		spider.start();
+		//spider.start();
 		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
 //		com.microsoft.sqlserver.jdbc.SQLServerDriver
 	}
