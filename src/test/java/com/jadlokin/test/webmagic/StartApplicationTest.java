@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
@@ -58,17 +59,10 @@ public class StartApplicationTest {
 				.setPage(0L).setReply(0L)
 				.setView(0L));
 	}
+	@Autowired
+	RedisConnectionFactory factory;
 	@Test
-	public static void main(String args[]) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-				.withZone(ZoneId.systemDefault());
-//		System.out.println(
-//				formatter.format(
-//						LocalDateTime.ofEpochSecond(
-//								1286437711L,
-//								0,
-//								ZoneOffset.ofHours(8))));
-		System.out.println(formatter.format(Instant.now()));
+	public void main() {
 	}
 
 

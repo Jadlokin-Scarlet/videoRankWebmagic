@@ -1,4 +1,6 @@
-package com.jadlokin.test.webmagic.util;
+package com.jadlokin.test.webmagic.util.object;
+
+import com.jadlokin.test.webmagic.util.Lists;
 
 import java.util.List;
 

@@ -11,7 +11,7 @@
     <result column="pub_time" jdbcType="NVARCHAR" property="pubTime" />
     <result column="start_time" jdbcType="NUMERIC" property="startTime" />
     <result column="is_delete" jdbcType="BIT" property="isDelete" />
-    <result column="bv" jdbcType="VARCHAR" property="bv" />
+    <result column="bv" jdbcType="NVARCHAR" property="bv" />
   </resultMap>
   <sql id="Base_Column_List">
     av, [name], img, [type], [owner], copyright, pub_time, start_time, is_delete, bv
@@ -19,25 +19,25 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from video_info
+    from video_info_copy
     where av = #{av,jdbcType=NUMERIC}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from video_info
+    delete from video_info_copy
     where av = #{av,jdbcType=NUMERIC}
   </delete>
   <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
-    insert into video_info (av, [name], img, 
+    insert into video_info_copy (av, [name], img, 
       [type], [owner], copyright, 
       pub_time, start_time, is_delete, 
       bv)
     values (#{av,jdbcType=NUMERIC}, #{name,jdbcType=NVARCHAR}, #{img,jdbcType=NVARCHAR}, 
       #{type,jdbcType=NVARCHAR}, #{owner,jdbcType=NVARCHAR}, #{copyright,jdbcType=BIT}, 
       #{pubTime,jdbcType=NVARCHAR}, #{startTime,jdbcType=NUMERIC}, #{isDelete,jdbcType=BIT}, 
-      #{bv,jdbcType=VARCHAR})
+      #{bv,jdbcType=NVARCHAR})
   </insert>
   <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
-    insert into video_info
+    insert into video_info_copy
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="av != null">
         av,
@@ -99,12 +99,12 @@
         #{isDelete,jdbcType=BIT},
       </if>
       <if test="bv != null">
-        #{bv,jdbcType=VARCHAR},
+        #{bv,jdbcType=NVARCHAR},
       </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo">
-    update video_info
+    update video_info_copy
     <set>
       <if test="name != null">
         [name] = #{name,jdbcType=NVARCHAR},
@@ -131,13 +131,13 @@
         is_delete = #{isDelete,jdbcType=BIT},
       </if>
       <if test="bv != null">
-        bv = #{bv,jdbcType=VARCHAR},
+        bv = #{bv,jdbcType=NVARCHAR},
       </if>
     </set>
     where av = #{av,jdbcType=NUMERIC}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo">
-    update video_info
+    update video_info_copy
     set [name] = #{name,jdbcType=NVARCHAR},
       img = #{img,jdbcType=NVARCHAR},
       [type] = #{type,jdbcType=NVARCHAR},
@@ -146,7 +146,7 @@
       pub_time = #{pubTime,jdbcType=NVARCHAR},
       start_time = #{startTime,jdbcType=NUMERIC},
       is_delete = #{isDelete,jdbcType=BIT},
-      bv = #{bv,jdbcType=VARCHAR}
+      bv = #{bv,jdbcType=NVARCHAR}
     where av = #{av,jdbcType=NUMERIC}
   </update>
 </mapper>

@@ -2,6 +2,8 @@ package com.jadlokin.test.webmagic.component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jadlokin.test.webmagic.entity.VideoInfo;
+import com.jadlokin.test.webmagic.mapper.VideoInfoMapper;
+import com.jadlokin.test.webmagic.mapper.VideoMapper;
 import com.jadlokin.test.webmagic.util.VideoSequence;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.Date;
 public class MainPageProcessor implements PageProcessor {
 
 	private VideoSequence videoSequence;
+	private VideoInfoMapper videoInfoMapper;
 
 	@Autowired
 	public MainPageProcessor(VideoSequence sequence) {
@@ -28,16 +31,13 @@ public class MainPageProcessor implements PageProcessor {
 	@Override
 	public void process(Page page) {
 		JSONObject obj = JSONObject.parseObject(page.getJson().get());
-		if (!Arrays.asList("-404", "62002").contains(obj.getString("code"))) {
-			String av = page.getUrl().get().split("=")[1];
-			log.warn("av" + av + " is found");
-//			page.putField("data", obj.getJSONObject("data"));
-		} else {
-//			String av = page.getUrl().get().split("=")[1];
-//			log.warn("av" + av + " is not found");
-		}
-
+		JSONObject video = obj.getJSONObject("data")
+				.getJSONObject("news")
+				.getJSONArray("archives")
+				.getJSONObject(0);
+		page.putField("data", video);
 		if(videoSequence.hasLast()) {
+			page.addTargetRequest(videoSequence.lastVideo());
 			page.addTargetRequest(videoSequence.lastVideo());
 		}
 	}

@@ -8,8 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import us.codecraft.webmagic.Spider;
 
 import javax.annotation.PostConstruct;
-import java.time.Instant;
-import java.time.ZoneId;
+import com.jadlokin.test.webmagic.util.object.Timer;
+
+import java.util.ArrayList;
 
 @Slf4j
 @SpringBootApplication
@@ -30,10 +31,7 @@ public class StartApplication {
 
 	@PostConstruct
 	public void run() {
-		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
-		spider.start();
-		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
-//		com.microsoft.sqlserver.jdbc.SQLServerDriver
+		new Timer(spider::start, 60 * 60 * 1000);
 	}
 
 }

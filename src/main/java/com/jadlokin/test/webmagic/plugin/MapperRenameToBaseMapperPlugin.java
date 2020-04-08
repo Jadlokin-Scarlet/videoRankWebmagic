@@ -1,7 +1,7 @@
 package com.jadlokin.test.webmagic.plugin;
 
-import com.jadlokin.test.webmagic.util.MapperPackage;
-import com.jadlokin.test.webmagic.util.Package;
+import com.jadlokin.test.webmagic.util.object.MapperPackage;
+import com.jadlokin.test.webmagic.util.object.Package;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 

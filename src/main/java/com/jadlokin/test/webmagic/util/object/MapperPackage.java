@@ -1,4 +1,4 @@
-package com.jadlokin.test.webmagic.util;
+package com.jadlokin.test.webmagic.util.object;
 
 public class MapperPackage extends Package {
 
