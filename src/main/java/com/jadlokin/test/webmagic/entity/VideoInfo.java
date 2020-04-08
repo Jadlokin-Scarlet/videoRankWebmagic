@@ -31,4 +31,6 @@ public class VideoInfo {
     private Long startTime;
 
     private Boolean isDelete;
+
+    private String bv;
 }

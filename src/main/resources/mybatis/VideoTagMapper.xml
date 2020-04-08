@@ -2,6 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jadlokin.test.webmagic.mapper.VideoTagMapper">
   <select id="selectAllForAv" resultType="Long">
-    select av from touhouTag where av > 91219850;
+    select av from touhouTag where av > 20772000;
+  </select>
+  <select id="selectNoInfoVideoForAv" resultType="Long">
+    select tag_av from
+        (select distinct av as data_av from video_info) data right join
+        (select av as tag_av from touhouTag) tag on data_av = tag_av
+    where data_av is null or tag_av is null
+    order by data_av, tag_av;
   </select>
 </mapper>

@@ -1,7 +1,10 @@
 package com.jadlokin.test.webmagic;
 
 import com.jadlokin.test.webmagic.entity.VideoData;
+import com.jadlokin.test.webmagic.entity.VideoInfo;
 import com.jadlokin.test.webmagic.mapper.VideoDataMapper;
+import com.jadlokin.test.webmagic.mapper.VideoInfoMapper;
+import com.jadlokin.test.webmagic.mapper.VideoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +13,15 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -20,6 +31,10 @@ public class StartApplicationTest {
 
 	@Autowired
 	private VideoDataMapper videoDataMapper;
+	@Autowired
+	private VideoInfoMapper videoInfoMapper;
+	@Autowired
+	private VideoMapper videoMapper;
 
 	private Long getPoint(VideoData newData, VideoData oldData) {
 		VideoData data = new VideoData()
@@ -44,14 +59,44 @@ public class StartApplicationTest {
 				.setView(0L));
 	}
 	@Test
-	public void main() {
-//		List<VideoData> videoDataList = videoDataMapper.selectAllDisparityBetweenTwoIssue((short) 1);
-//		videoDataList.stream()
-//				.map(videoData -> new VideoData()
-//						.setAv(videoData.getAv())
-//						.setIssue(videoData.getIssue())
-//						.setPoint(getPoint(videoData)))
-//				.forEach(videoDataMapper::updateByPrimaryKeySelective);
+	public static void main(String args[]) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+				.withZone(ZoneId.systemDefault());
+//		System.out.println(
+//				formatter.format(
+//						LocalDateTime.ofEpochSecond(
+//								1286437711L,
+//								0,
+//								ZoneOffset.ofHours(8))));
+		System.out.println(formatter.format(Instant.now()));
+	}
+
+
+	public void checkBvRule() {
+		List<VideoInfo> videoInfoList = videoInfoMapper.selectAll();
+		String table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF";
+		Map<Character, Integer> map = IntStream.range(0, 58).boxed()
+				.collect(Collectors.toMap(table::charAt, integer -> integer));
+		List<Integer> indexs = Arrays.asList(11, 10, 3, 8, 4, 6, 2, 9, 5, 7);
+		Collections.reverse(indexs);
+		log.info("start");
+		boolean ans = videoInfoList.stream()
+				.allMatch(videoInfo -> {
+					Long av = videoInfo.getAv();
+					String bv = videoInfo.getBv();
+					Long newAv = indexs.stream()
+							.map(bv::charAt)
+							.map(map::get)
+							.map(Long::valueOf)
+							.reduce(0L, (a, b) ->
+									a * 58 + b
+							);
+					newAv -= 100618342136696320L;
+					newAv ^= 177451812L;
+					log.info("[av" + av + "][" + bv + "]compute ans is " + newAv);
+					return av.equals(newAv);
+				});
+		log.warn("ans = " + ans);
 	}
 
 	public List<VideoData> updatePoint() {

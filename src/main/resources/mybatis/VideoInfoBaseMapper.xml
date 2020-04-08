@@ -11,9 +11,10 @@
     <result column="pub_time" jdbcType="NVARCHAR" property="pubTime" />
     <result column="start_time" jdbcType="NUMERIC" property="startTime" />
     <result column="is_delete" jdbcType="BIT" property="isDelete" />
+    <result column="bv" jdbcType="VARCHAR" property="bv" />
   </resultMap>
   <sql id="Base_Column_List">
-    av, [name], img, [type], [owner], copyright, pub_time, start_time, is_delete
+    av, [name], img, [type], [owner], copyright, pub_time, start_time, is_delete, bv
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -28,12 +29,12 @@
   <insert id="insert" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
     insert into video_info (av, [name], img, 
       [type], [owner], copyright, 
-      pub_time, start_time, is_delete
-      )
+      pub_time, start_time, is_delete, 
+      bv)
     values (#{av,jdbcType=NUMERIC}, #{name,jdbcType=NVARCHAR}, #{img,jdbcType=NVARCHAR}, 
       #{type,jdbcType=NVARCHAR}, #{owner,jdbcType=NVARCHAR}, #{copyright,jdbcType=BIT}, 
-      #{pubTime,jdbcType=NVARCHAR}, #{startTime,jdbcType=NUMERIC}, #{isDelete,jdbcType=BIT}
-      )
+      #{pubTime,jdbcType=NVARCHAR}, #{startTime,jdbcType=NUMERIC}, #{isDelete,jdbcType=BIT}, 
+      #{bv,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyProperty="id" parameterType="com.jadlokin.test.webmagic.entity.VideoInfo" useGeneratedKeys="true">
     insert into video_info
@@ -65,6 +66,9 @@
       <if test="isDelete != null">
         is_delete,
       </if>
+      <if test="bv != null">
+        bv,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="av != null">
@@ -93,6 +97,9 @@
       </if>
       <if test="isDelete != null">
         #{isDelete,jdbcType=BIT},
+      </if>
+      <if test="bv != null">
+        #{bv,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -123,6 +130,9 @@
       <if test="isDelete != null">
         is_delete = #{isDelete,jdbcType=BIT},
       </if>
+      <if test="bv != null">
+        bv = #{bv,jdbcType=VARCHAR},
+      </if>
     </set>
     where av = #{av,jdbcType=NUMERIC}
   </update>
@@ -135,7 +145,8 @@
       copyright = #{copyright,jdbcType=BIT},
       pub_time = #{pubTime,jdbcType=NVARCHAR},
       start_time = #{startTime,jdbcType=NUMERIC},
-      is_delete = #{isDelete,jdbcType=BIT}
+      is_delete = #{isDelete,jdbcType=BIT},
+      bv = #{bv,jdbcType=VARCHAR}
     where av = #{av,jdbcType=NUMERIC}
   </update>
 </mapper>

@@ -1,5 +1,6 @@
 package com.jadlokin.test.webmagic.util;
 
+import com.jadlokin.test.webmagic.mapper.VideoMapper;
 import com.jadlokin.test.webmagic.mapper.VideoTagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,8 @@ public class VideoSequence {
 	private Integer index = 0;
 
 	@Autowired
-	public VideoSequence(VideoTagMapper videoTagMapper) {
-		this.avList = videoTagMapper.selectAllForAv();
+	public VideoSequence(VideoMapper videoMapper) {
+		this.avList = videoMapper.selectAllAvThatNoInfo();
 	}
 
 	public String lastVideo() {

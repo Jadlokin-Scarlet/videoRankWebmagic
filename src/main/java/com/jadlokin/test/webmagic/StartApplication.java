@@ -31,7 +31,7 @@ public class StartApplication {
 	@PostConstruct
 	public void run() {
 		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
-		//spider.start();
+		spider.start();
 		log.warn(Instant.now().atZone(ZoneId.systemDefault()).toString());
 //		com.microsoft.sqlserver.jdbc.SQLServerDriver
 	}

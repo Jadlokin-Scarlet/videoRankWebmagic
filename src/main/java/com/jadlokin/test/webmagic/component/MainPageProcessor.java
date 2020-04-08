@@ -27,23 +27,14 @@ public class MainPageProcessor implements PageProcessor {
 
 	@Override
 	public void process(Page page) {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		JSONObject obj = JSONObject.parseObject(page.getJson().get());
 		if (!Arrays.asList("-404", "62002").contains(obj.getString("code"))) {
-			JSONObject data = obj.getJSONObject("data");
-
-			VideoInfo videoInfo = new VideoInfo()
-					.setAv(data.getLong("aid"))
-					.setName(data.getString("title"))
-					.setImg(data.getString("pic"))
-					.setType(data.getString("tname"))
-					.setOwner(data.getJSONObject("owner").getString("name"))
-					.setCopyright(data.getInteger("copyright") - 1 == 1)
-					.setPubTime(formatter.format(new Date(data.getLong("pubdate"))));
-			page.putField("videoInfo", videoInfo);
-		} else {
 			String av = page.getUrl().get().split("=")[1];
-			log.warn("av" + av + " is not found");
+			log.warn("av" + av + " is found");
+//			page.putField("data", obj.getJSONObject("data"));
+		} else {
+//			String av = page.getUrl().get().split("=")[1];
+//			log.warn("av" + av + " is not found");
 		}
 
 		if(videoSequence.hasLast()) {
@@ -53,7 +44,7 @@ public class MainPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(1).setSleepTime(1);
+		return Site.me().setRetryTimes(1).setSleepTime(5);
 	}
 
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface VideoTagMapper extends  VideoTagBaseMapper{
 
     List<Long> selectAllForAv();
+
+    List<Long> selectNoInfoVideoForAv();
 }
