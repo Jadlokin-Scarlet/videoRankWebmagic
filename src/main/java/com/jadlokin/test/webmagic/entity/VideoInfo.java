@@ -33,4 +33,16 @@ public class VideoInfo {
     private Boolean isDelete;
 
     private String bv;
+
+    private String description;
+
+    private Long state;
+
+    private Long attribute;
+
+    private Long duration;
+
+    private Long missionId;
+
+    private String dynamic;
 }

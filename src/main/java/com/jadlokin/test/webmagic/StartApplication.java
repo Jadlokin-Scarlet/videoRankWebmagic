@@ -1,5 +1,6 @@
 package com.jadlokin.test.webmagic;
 
+import com.jadlokin.test.webmagic.util.object.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import us.codecraft.webmagic.Spider;
 
 import javax.annotation.PostConstruct;
-import com.jadlokin.test.webmagic.util.object.Timer;
-
-import java.util.ArrayList;
 
 @Slf4j
 @SpringBootApplication
@@ -20,8 +18,8 @@ public class StartApplication {
 	private final Spider spider;
 
 	@Autowired
-	public StartApplication(Spider spider) {
-		this.spider = spider;
+	public StartApplication(Spider viewSpider) {
+		this.spider = viewSpider;
 	}
 
 	public static void main(String[] args) {
@@ -31,7 +29,7 @@ public class StartApplication {
 
 	@PostConstruct
 	public void run() {
-		new Timer(spider::start, 60 * 60 * 1000);
+		spider.start();
 	}
 
 }

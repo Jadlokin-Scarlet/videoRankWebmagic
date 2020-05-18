@@ -1,4 +1,4 @@
-package com.jadlokin.test.webmagic.component;
+package com.jadlokin.test.webmagic.component.tag;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jadlokin.test.webmagic.entity.VideoInfo;
@@ -6,25 +6,22 @@ import com.jadlokin.test.webmagic.mapper.VideoInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.rmi.runtime.Log;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Slf4j
 @Component
-public class MainPipeline implements Pipeline {
+public class TagPipeline implements Pipeline {
 
 	private VideoInfoMapper videoInfoMapper;
 
 	@Autowired
-	public MainPipeline(VideoInfoMapper videoInfoMapper) {
+	public TagPipeline(VideoInfoMapper videoInfoMapper) {
 		this.videoInfoMapper = videoInfoMapper;
 	}
 

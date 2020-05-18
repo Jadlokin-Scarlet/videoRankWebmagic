@@ -14,6 +14,32 @@
 		<version>2.1.3.RELEASE</version>
 	</parent>
 
+	<build>
+		<plugins>
+			<plugin>
+				<!-- The plugin rewrites your manifest -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>1.3.0.RELEASE</version>
+				<configuration><!-- 指定该Main Class为全局的唯一入口 -->
+					<mainClass>com.jadlokin.test.webmagic.StartApplication</mainClass>
+					<layout>ZIP</layout>
+					<fork>true</fork>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
+						</goals>
+						<!--可以生成不含依赖包的不可执行Jar包-->
+						<!-- configuration>
+						  <classifier>exec</classifier>
+						</configuration> -->
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -66,5 +92,12 @@
 			<artifactId>orai18n</artifactId>
 			<version>11.2.0.4</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.external/opendmk_jdmkrt_jar -->
+		<dependency>
+			<groupId>org.glassfish.external</groupId>
+			<artifactId>opendmk_jdmkrt_jar</artifactId>
+			<version>1.0-b01-ea</version>
+		</dependency>
+
 	</dependencies>
 </project>

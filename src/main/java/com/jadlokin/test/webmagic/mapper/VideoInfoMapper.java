@@ -9,4 +9,7 @@ import java.util.List;
 public interface VideoInfoMapper extends VideoInfoBaseMapper {
 
 	List<VideoInfo> selectAll();
+	List<Long> selectAllAv();
+
+	List<VideoInfo> selectAllAdvertisement();
 }

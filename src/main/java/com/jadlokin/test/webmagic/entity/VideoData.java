@@ -31,4 +31,14 @@ public class VideoData {
     private Long point;
 
     private Long rank;
+
+    private Long danmaku;
+
+    private Long share;
+
+    private Long like;
+
+    private Long dislike;
+
+    private String evaluation;
 }

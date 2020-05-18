@@ -6,7 +6,7 @@
   </select>
   <select id="selectNoInfoVideoForAv" resultType="Long">
     select tag_av from
-        (select distinct av as data_av from video_info_copy) data right join
+        (select distinct av as data_av from video_info_test) data right join
         (select av as tag_av from touhouTag) tag on data_av = tag_av
     where data_av is null or tag_av is null
     order by data_av, tag_av;
