@@ -6,10 +6,15 @@ import com.jadlokin.test.webmagic.entity.VideoInfo;
 import com.jadlokin.test.webmagic.entity.VideoPage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -23,10 +28,19 @@ public class ViewPageProcessor implements PageProcessor {
 	public void process(Page page) {
 		String av = page.getUrl().get().split("=")[1];
 		JSONObject rep = JSONObject.parseObject(page.getJson().get());
-		page.putField("av", av);
-		page.putField("rep", rep);
-//		Integer code = obj.getInteger("code");
-//		if (code.equals(404)) {
+		Integer code = rep.getInteger("code");
+		if (code.equals(-412)) {
+			try {
+				Thread.sleep(10 * 60 * 1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			page.addTargetRequest(page.getUrl().get());
+		}else {
+			page.putField("av", av);
+			page.putField("rep", rep);
+		}
+
 //			VideoInfo videoInfo = new VideoInfo()
 //					.setAv(Long.valueOf(av))
 //					.setIsDelete(true);
@@ -36,7 +50,11 @@ public class ViewPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(1).setSleepTime(50);
+		return Site.me().setRetryTimes(1000).setSleepTime(1000)
+				.setCharset("UTF-8")
+				.setAcceptStatCode(new HashSet<>(
+						Arrays.asList(412, 200)
+				));
 	}
 
 	private VideoPage newVideoPage(JSONObject obj) {

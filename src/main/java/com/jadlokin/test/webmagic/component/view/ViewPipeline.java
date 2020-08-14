@@ -43,12 +43,16 @@ public class ViewPipeline implements Pipeline {
 
 	@Override
 	public void process(ResultItems resultItems, Task task) {
-		long av = Long.valueOf(resultItems.get("av"));
 		JSONObject rep = resultItems.get("rep");
+		if (rep == null) {
+			return;
+		}
+		long av = Long.valueOf(resultItems.get("av"));
 		if (!rep.getInteger("code").equals(0)
 				|| !rep.getJSONObject("data").containsKey("pages")) {
 			VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true);
 			videoInfoMapper.updateByPrimaryKeySelective(videoInfo);
+//			videoInfoMapper.deleteByPrimaryKey(av);
 			return;
 		}
 		JSONObject data = rep.getJSONObject("data");
