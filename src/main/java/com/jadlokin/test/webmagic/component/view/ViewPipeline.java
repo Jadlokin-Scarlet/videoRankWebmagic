@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 @Component
 public class ViewPipeline implements Pipeline {
 
-	private VideoInfoMapper videoInfoMapper;
-	private VideoDataMapper videoDataMapper;
-	private VideoPageMapper videoPageMapper;
-	private OwnerMapper ownerMapper;
-	private RightMapper rightMapper;
+	private final VideoInfoMapper videoInfoMapper;
+	private final VideoDataMapper videoDataMapper;
+	private final VideoPageMapper videoPageMapper;
+	private final OwnerMapper ownerMapper;
+	private final RightMapper rightMapper;
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 			.withZone(ZoneId.systemDefault());
@@ -47,47 +47,47 @@ public class ViewPipeline implements Pipeline {
 		if (rep == null) {
 			return;
 		}
-		long av = Long.valueOf(resultItems.get("av"));
-		if (!rep.getInteger("code").equals(0)
-				|| !rep.getJSONObject("data").containsKey("pages")) {
+		long av = Long.parseLong(resultItems.get("av"));
+		if (!rep.getInteger("code").equals(0)) {
 			VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true);
 			videoInfoMapper.updateByPrimaryKeySelective(videoInfo);
-//			videoInfoMapper.deleteByPrimaryKey(av);
 			return;
 		}
 		JSONObject data = rep.getJSONObject("data");
-		VideoInfo videoInfo = newVideoInfo(data);
-		VideoData videoData = newVideoData(data);
-		Stream<VideoPage> videoPageStream = newVideoPageList(data);
-		Owner owner = newOwner(data);
-		Right right = newRight(data);
 
+		VideoInfo videoInfo = newVideoInfo(data);
 		if (videoInfoMapper.selectByPrimaryKey(av) == null) {
 			videoInfoMapper.insertSelective(videoInfo);
 		} else {
 			videoInfoMapper.updateByPrimaryKeySelective(videoInfo);
 		}
 
+		VideoData videoData = newVideoData(data);
 		if (videoDataMapper.selectByPrimaryKey(av, videoData.getIssue()) == null) {
 			videoDataMapper.insertSelective(videoData);
 		} else {
 			videoDataMapper.updateByPrimaryKeySelective(videoData);
 		}
 
-		videoPageStream.forEach(videoPage -> {
-			if (videoPageMapper.selectByPrimaryKey(videoPage.getCid(), videoPage.getAv()) == null) {
-				videoPageMapper.insertSelective(videoPage);
-			} else {
-				videoPageMapper.updateByPrimaryKeySelective(videoPage);
-			}
-		});
+		if (! rep.getJSONObject("data").containsKey("pages")) {
+			Stream<VideoPage> videoPageStream = newVideoPageList(data);
+			videoPageStream.forEach(videoPage -> {
+				if (videoPageMapper.selectByPrimaryKey(videoPage.getCid(), videoPage.getAv()) == null) {
+					videoPageMapper.insertSelective(videoPage);
+				} else {
+					videoPageMapper.updateByPrimaryKeySelective(videoPage);
+				}
+			});
+		}
 
+		Owner owner = newOwner(data);
 		if (ownerMapper.selectByPrimaryKey(owner.getUid()) == null) {
 			ownerMapper.insertSelective(owner);
 		} else {
 			ownerMapper.updateByPrimaryKeySelective(owner);
 		}
 
+		Right right = newRight(data);
 		if (rightMapper.selectByPrimaryKey(av) == null) {
 			rightMapper.insertSelective(right);
 		} else {
@@ -116,7 +116,7 @@ public class ViewPipeline implements Pipeline {
 		JSONObject stat = obj.getJSONObject("stat");
 		return new VideoData()
 				.setAv(obj.getLong("aid"))
-				.setIssue((short) 11)
+				.setIssue((short) videoDataMapper.getNewIssue())
 				.setDanmaku(stat.getLong("danmaku"))
 				.setShare(stat.getLong("share"))
 				.setLike(stat.getLong("like"))

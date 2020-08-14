@@ -22,8 +22,6 @@ import java.util.stream.Stream;
 @Component
 public class ViewPageProcessor implements PageProcessor {
 
-//	private VideoInfoMapper videoInfoMapper;
-
 	@Override
 	public void process(Page page) {
 		String av = page.getUrl().get().split("=")[1];
@@ -40,12 +38,6 @@ public class ViewPageProcessor implements PageProcessor {
 			page.putField("av", av);
 			page.putField("rep", rep);
 		}
-
-//			VideoInfo videoInfo = new VideoInfo()
-//					.setAv(Long.valueOf(av))
-//					.setIsDelete(true);
-//			page.putField("videoInfo", videoInfo);
-//		}
 	}
 
 	@Override
@@ -55,14 +47,5 @@ public class ViewPageProcessor implements PageProcessor {
 				.setAcceptStatCode(new HashSet<>(
 						Arrays.asList(412, 200)
 				));
-	}
-
-	private VideoPage newVideoPage(JSONObject obj) {
-		return new VideoPage()
-				.setCid(obj.getLong("cid"))
-				.setPage(obj.getInteger("page"))
-				.setFrom(obj.getString("from"))
-				.setPart(obj.getString("part"))
-				.setDuration(obj.getLong("duration"));
 	}
 }
