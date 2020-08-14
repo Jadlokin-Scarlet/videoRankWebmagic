@@ -12,21 +12,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.sun.jdmk.comm.RmiConnectorAddress;
-import com.sun.jdmk.comm.RmiConnectorClient;
 
-import javax.management.Attribute;
-import javax.management.ObjectName;
-import javax.validation.constraints.AssertTrue;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,8 +35,6 @@ public class StartApplicationTest {
 	@Autowired
 	private VideoMapper videoMapper;
 
-	@Autowired
-	RedisConnectionFactory factory;
 	@Test
 	public void main() {
 		List<Long> avList = avMapper.selectAllAv();
@@ -53,21 +42,6 @@ public class StartApplicationTest {
 	}
 
 	public void rmiConnector() {
-		RmiConnectorClient client = new RmiConnectorClient();
-		RmiConnectorAddress address = new RmiConnectorAddress();
-		try {
-			client.connect(address);
-			ObjectName helloWorldName = ObjectName
-					.getInstance("HelloAgent:name=helloWorld1");
-			client.invoke(helloWorldName, "sayHello", null, null);
-			client.setAttribute(helloWorldName, new Attribute("Hello",
-					new String("hello girls!")));
-			client.invoke(helloWorldName, "sayHello", null, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-
-		}
 	}
 
 	private Long getPoint(VideoData newData, VideoData oldData) {

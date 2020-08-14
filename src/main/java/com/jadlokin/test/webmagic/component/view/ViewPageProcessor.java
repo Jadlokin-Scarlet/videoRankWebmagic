@@ -28,6 +28,7 @@ public class ViewPageProcessor implements PageProcessor {
 		JSONObject rep = JSONObject.parseObject(page.getJson().get());
 		Integer code = rep.getInteger("code");
 		if (code.equals(-412)) {
+			log.error(rep.toString());
 			try {
 				Thread.sleep(10 * 60 * 1000);
 			} catch (InterruptedException e) {

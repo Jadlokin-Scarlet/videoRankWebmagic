@@ -49,6 +49,7 @@ public class ViewPipeline implements Pipeline {
 		}
 		long av = Long.parseLong(resultItems.get("av"));
 		if (!rep.getInteger("code").equals(0)) {
+			log.error(rep.toString());
 			VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true);
 			videoInfoMapper.updateByPrimaryKeySelective(videoInfo);
 			return;
