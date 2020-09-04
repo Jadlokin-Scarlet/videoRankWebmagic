@@ -27,6 +27,7 @@ public interface AvMapper extends AvBaseMapper{
             "    or video_info.is_delete = 1\n" +
             "    or video_data.danmaku is null\n" +
             "    or touhouTag.tag1 is null\n" +
-            "    or page.page != video_data.page")
+            "    or page.page != video_data.page" +
+            "order by touhou_all.av desc")
     List<Long> selectOtherAv();
 }
