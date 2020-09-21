@@ -127,6 +127,10 @@ public class ViewPipeline implements Pipeline {
 
 	private Stream<VideoPage> newVideoPageList(JSONObject obj) {
 		JSONArray pages = obj.getJSONArray("pages");
+		if (!obj.containsKey("pages")) {
+			log.warn("该视频无page信息");
+			return Stream.empty();
+		}
 		return IntStream.range(0, obj.getJSONArray("pages").size())
 				.mapToObj(pages::getJSONObject)
 				.map(this::newVideoPage)
