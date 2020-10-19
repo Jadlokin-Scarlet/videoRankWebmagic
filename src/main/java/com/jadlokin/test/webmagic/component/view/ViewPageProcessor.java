@@ -43,7 +43,7 @@ public class ViewPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(1000).setSleepTime(1000)
+		return Site.me().setRetryTimes(1000).setSleepTime(2000)
 				.setCharset("UTF-8")
 				.setAcceptStatCode(new HashSet<>(
 						Arrays.asList(412, 200)
