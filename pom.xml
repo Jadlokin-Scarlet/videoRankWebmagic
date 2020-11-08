@@ -111,11 +111,5 @@
 			<artifactId>opendmk_jdmkrt_jar</artifactId>
 			<version>1.0-b01-ea</version>
 		</dependency>
-		<dependency>
-			<groupId>quartz</groupId>
-			<artifactId>quartz</artifactId>
-			<version>1.5.2</version>
-		</dependency>
-
 	</dependencies>
 </project>

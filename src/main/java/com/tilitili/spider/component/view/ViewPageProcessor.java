@@ -18,18 +18,22 @@ public class ViewPageProcessor implements PageProcessor {
 
 	@Override
 	public void process(Page page) {
-		String av = page.getUrl().get().split("=")[1];
+		page.getStatusCode();
+		String id = page.getUrl().get().split("&_id_=")[1];
+		String av = page.getUrl().get().split("&_id_=")[0].split("aid=")[1];
 		JSONObject rep = JSONObject.parseObject(page.getJson().get());
 		Integer code = rep.getInteger("code");
 		if (code.equals(-412)) {
 			log.error(rep.toString());
 			try {
-				Thread.sleep(10 * 60 * 1000);
+				Thread.sleep(20 * 60 * 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			page.addTargetRequest(page.getUrl().get());
+			page.setSkip(true);
 		}else {
+			page.putField("id", id);
 			page.putField("av", av);
 			page.putField("rep", rep);
 		}
@@ -37,7 +41,7 @@ public class ViewPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(1000).setSleepTime(2000)
+		return Site.me().setRetryTimes(2000).setSleepTime(2000)
 				.setCharset("UTF-8")
 				.setAcceptStatCode(new HashSet<>(
 						Arrays.asList(412, 200)

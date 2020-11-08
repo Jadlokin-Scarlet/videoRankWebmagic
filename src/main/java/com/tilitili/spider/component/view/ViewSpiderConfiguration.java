@@ -12,6 +12,7 @@ public class ViewSpiderConfiguration {
 		return Spider.create(viewPageProcessor)
 				.addPipeline(viewPipeline)
 				.setScheduler(viewScheduler)
+				.setExitWhenComplete(false)
 				.thread(1);
 	}
 

@@ -26,9 +26,9 @@ public class StartApplication {
 	}
 
 
-//	@PostConstruct
-//	public void run() {
-//		spider.start();
-//	}
+	@PostConstruct
+	public void run() {
+		spider.start();
+	}
 
 }

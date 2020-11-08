@@ -2,17 +2,13 @@ package com.tilitili.spider.component.view;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.*;
-import com.tilitili.common.mapper.VideoDataMapper;
-import com.tilitili.common.mapper.VideoInfoMapper;
-import com.tilitili.common.mapper.RightMapper;
-import com.tilitili.common.mapper.VideoPageMapper;
-import com.tilitili.common.mapper.OwnerMapper;
+import com.tilitili.common.mapper.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 import java.time.Instant;
@@ -31,70 +27,86 @@ public class ViewPipeline implements Pipeline {
 	private final OwnerMapper ownerMapper;
 	private final RightMapper rightMapper;
 
+	private final TaskMapper taskMapper;
+
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 			.withZone(ZoneId.systemDefault());
 
 	@Autowired
-	public ViewPipeline(VideoPageMapper videoPageMapper, VideoInfoMapper videoInfoMapper, VideoDataMapper videoDataMapper, OwnerMapper ownerMapper, RightMapper rightMapper) {
+	public ViewPipeline(VideoPageMapper videoPageMapper, VideoInfoMapper videoInfoMapper, VideoDataMapper videoDataMapper, OwnerMapper ownerMapper, RightMapper rightMapper, TaskMapper taskMapper) {
 		this.videoPageMapper = videoPageMapper;
 		this.videoInfoMapper = videoInfoMapper;
 		this.videoDataMapper = videoDataMapper;
 		this.ownerMapper = ownerMapper;
 		this.rightMapper = rightMapper;
+		this.taskMapper = taskMapper;
 	}
 
 	@Override
-	public void process(ResultItems resultItems, Task task) {
+	public void process(ResultItems resultItems, us.codecraft.webmagic.Task task) {
 		JSONObject rep = resultItems.get("rep");
 		if (rep == null) {
 			return;
 		}
 		long av = Long.parseLong(resultItems.get("av"));
-		if (!rep.getInteger("code").equals(0)) {
-			log.error(rep.toString());
-			VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true);
-			videoInfoMapper.update(videoInfo);
-			return;
-		}
-		JSONObject data = rep.getJSONObject("data");
+		long id = Long.parseLong(resultItems.get("id"));
 
-		VideoInfo videoInfo = newVideoInfo(data);
-		if (videoInfoMapper.getByAv(av) == null) {
-			videoInfoMapper.insert(videoInfo);
-		} else {
-			videoInfoMapper.update(videoInfo);
-		}
-
-		VideoData videoData = newVideoData(data);
-		if (videoDataMapper.getByAvAndIssue(av, videoData.getIssue()) == null) {
-			videoDataMapper.insert(videoData);
-		} else {
-			videoDataMapper.update(videoData);
-		}
-
-		if (! rep.getJSONObject("data").containsKey("pages")) {
-			Stream<VideoPage> videoPageStream = newVideoPageList(data);
-			videoPageStream.forEach(videoPage -> {
-				if (videoPageMapper.getByCidAndAv(videoPage.getCid(), videoPage.getAv()) == null) {
-					videoPageMapper.insert(videoPage);
-				} else {
-					videoPageMapper.update(videoPage);
+		try {
+			if (!rep.getInteger("code").equals(0)) {
+				log.error(rep.toString());
+				VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true).setStatus(rep.getInteger("code"));
+				if (videoInfoMapper.getByAv(av) == null) {
+					videoInfoMapper.insert(videoInfo);
+				}else {
+					videoInfoMapper.update(videoInfo);
 				}
-			});
-		}
+				taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), rep.getString("message"));
+				return;
+			}
+			JSONObject data = rep.getJSONObject("data");
 
-		Owner owner = newOwner(data);
-		if (ownerMapper.getByUid(owner.getUid()) == null) {
-			ownerMapper.insert(owner);
-		} else {
-			ownerMapper.update(owner);
-		}
+			VideoInfo videoInfo = newVideoInfo(data);
+			if (videoInfoMapper.getByAv(av) == null) {
+				videoInfoMapper.insert(videoInfo);
+			} else {
+				videoInfoMapper.update(videoInfo);
+			}
 
-		Right right = newRight(data);
-		if (rightMapper.getByAv(av) == null) {
-			rightMapper.insert(right);
-		} else {
-			rightMapper.update(right);
+			VideoData videoData = newVideoData(data);
+			if (videoDataMapper.getByAvAndIssue(av, videoData.getIssue()) == null) {
+				videoDataMapper.insert(videoData);
+			} else {
+				videoDataMapper.update(videoData);
+			}
+
+			if (! rep.getJSONObject("data").containsKey("pages")) {
+				Stream<VideoPage> videoPageStream = newVideoPageList(data);
+				videoPageStream.forEach(videoPage -> {
+					if (videoPageMapper.getByCidAndAv(videoPage.getCid(), videoPage.getAv()) == null) {
+						videoPageMapper.insert(videoPage);
+					} else {
+						videoPageMapper.update(videoPage);
+					}
+				});
+			}
+
+			Owner owner = newOwner(data);
+			if (ownerMapper.getByUid(owner.getUid()) == null) {
+				ownerMapper.insert(owner);
+			} else {
+				ownerMapper.update(owner);
+			}
+
+			Right right = newRight(data);
+			if (rightMapper.getByAv(av) == null) {
+				rightMapper.insert(right);
+			} else {
+				rightMapper.update(right);
+			}
+			taskMapper.updateStatusById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
+		} catch (Exception e) {
+			log.error("持久化失败, av=" + av, e);
+			taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
 		}
 	}
 
