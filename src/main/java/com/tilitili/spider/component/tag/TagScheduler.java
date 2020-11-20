@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 @Component
 public class TagScheduler extends DuplicateRemovedScheduler implements MonitorableScheduler {
+	private final String getTagInfoByName = "https://api.bilibili.com/x/tag/info?tag_name=%s";
+	private final String getVideoForTagById = "http://api.bilibili.com/x/tag/detail?ps=50&pn=%s&tag_id=%s";
 
 	private Queue<Request> requestQueue = new LinkedList<>();
 

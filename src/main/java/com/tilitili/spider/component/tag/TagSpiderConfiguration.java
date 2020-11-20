@@ -11,6 +11,7 @@ public class TagSpiderConfiguration {
 		return Spider.create(tagPageProcessor)
 				.addPipeline(tagPipeline)
 				.setScheduler(tagScheduler)
+				.setExitWhenComplete(false)
 				.thread(1);
 	}
 

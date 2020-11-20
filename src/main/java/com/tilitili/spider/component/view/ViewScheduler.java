@@ -10,13 +10,13 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
-import us.codecraft.webmagic.scheduler.MonitorableScheduler;
 
-import javax.jms.Message;
 import java.util.LinkedList;
 
 @Component
 public class ViewScheduler extends DuplicateRemovedScheduler {
+	private final String getVideoByAV = "https://api.bilibili.com/x/web-interface/view?aid=%s&_id_=%s";
+
 	private final TaskMapper taskMapper;
 	private final JmsTemplate jmsTemplate;
 
@@ -47,6 +47,7 @@ public class ViewScheduler extends DuplicateRemovedScheduler {
 		}
 		Log.info("receive spider video view task: {}", taskMessage);
 		taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
-		return new Request("https://api.bilibili.com/x/web-interface/view?aid=" + taskMessage.getAv() + "&_id_=" + taskMessage.getId());
+
+		return new Request(String.format(getVideoByAV, taskMessage.getAv(), taskMessage.getId()));
 	}
 }

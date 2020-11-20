@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.*;
-import com.tilitili.common.mapper.*;
+import com.tilitili.common.manager.*;
+import com.tilitili.common.mapper.TaskMapper;
+import com.tilitili.common.mapper.VideoDataMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,30 +17,31 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Slf4j
 @Component
 public class ViewPipeline implements Pipeline {
 
-	private final VideoInfoMapper videoInfoMapper;
-	private final VideoDataMapper videoDataMapper;
-	private final VideoPageMapper videoPageMapper;
-	private final OwnerMapper ownerMapper;
-	private final RightMapper rightMapper;
+	private final VideoInfoManager videoInfoManager;
+	private final VideoDataManager videoDataManager;
+	private final VideoPageManager videoPageManager;
+	private final OwnerManager ownerManager;
+	private final RightManager rightManager;
 
+	private final VideoDataMapper videoDataMapper;
 	private final TaskMapper taskMapper;
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 			.withZone(ZoneId.systemDefault());
 
 	@Autowired
-	public ViewPipeline(VideoPageMapper videoPageMapper, VideoInfoMapper videoInfoMapper, VideoDataMapper videoDataMapper, OwnerMapper ownerMapper, RightMapper rightMapper, TaskMapper taskMapper) {
-		this.videoPageMapper = videoPageMapper;
-		this.videoInfoMapper = videoInfoMapper;
+	public ViewPipeline(VideoPageManager videoPageManager, VideoInfoManager videoInfoManager, VideoDataManager videoDataManager, OwnerManager ownerManager, RightManager rightManager, VideoDataMapper videoDataMapper, TaskMapper taskMapper) {
+		this.videoPageManager = videoPageManager;
+		this.videoInfoManager = videoInfoManager;
+		this.videoDataManager = videoDataManager;
+		this.ownerManager = ownerManager;
+		this.rightManager = rightManager;
 		this.videoDataMapper = videoDataMapper;
-		this.ownerMapper = ownerMapper;
-		this.rightMapper = rightMapper;
 		this.taskMapper = taskMapper;
 	}
 
@@ -55,54 +58,21 @@ public class ViewPipeline implements Pipeline {
 			if (!rep.getInteger("code").equals(0)) {
 				log.error(rep.toString());
 				VideoInfo videoInfo = new VideoInfo().setAv(av).setIsDelete(true).setStatus(rep.getInteger("code"));
-				if (videoInfoMapper.getByAv(av) == null) {
-					videoInfoMapper.insert(videoInfo);
-				}else {
-					videoInfoMapper.update(videoInfo);
-				}
+				videoInfoManager.updateOrInsert(videoInfo);
 				taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), rep.getString("message"));
 				return;
+			}else {
+				VideoInfo videoInfo = new VideoInfo().setAv(av).setStatus(0);
+				videoInfoManager.updateOrInsert(videoInfo);
 			}
+
 			JSONObject data = rep.getJSONObject("data");
+			saveVideoInfo(data);
+			saveVideoData(data);
+			saveVideoPageList(data);
+			saveOwner(data);
+			saveRight(data, av);
 
-			VideoInfo videoInfo = newVideoInfo(data);
-			if (videoInfoMapper.getByAv(av) == null) {
-				videoInfoMapper.insert(videoInfo);
-			} else {
-				videoInfoMapper.update(videoInfo);
-			}
-
-			VideoData videoData = newVideoData(data);
-			if (videoDataMapper.getByAvAndIssue(av, videoData.getIssue()) == null) {
-				videoDataMapper.insert(videoData);
-			} else {
-				videoDataMapper.update(videoData);
-			}
-
-			if (! rep.getJSONObject("data").containsKey("pages")) {
-				Stream<VideoPage> videoPageStream = newVideoPageList(data);
-				videoPageStream.forEach(videoPage -> {
-					if (videoPageMapper.getByCidAndAv(videoPage.getCid(), videoPage.getAv()) == null) {
-						videoPageMapper.insert(videoPage);
-					} else {
-						videoPageMapper.update(videoPage);
-					}
-				});
-			}
-
-			Owner owner = newOwner(data);
-			if (ownerMapper.getByUid(owner.getUid()) == null) {
-				ownerMapper.insert(owner);
-			} else {
-				ownerMapper.update(owner);
-			}
-
-			Right right = newRight(data);
-			if (rightMapper.getByAv(av) == null) {
-				rightMapper.insert(right);
-			} else {
-				rightMapper.update(right);
-			}
 			taskMapper.updateStatusById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
 		} catch (Exception e) {
 			log.error("持久化失败, av=" + av, e);
@@ -110,8 +80,8 @@ public class ViewPipeline implements Pipeline {
 		}
 	}
 
-	private VideoInfo newVideoInfo(JSONObject obj) {
-		return new VideoInfo()
+	private void saveVideoInfo(JSONObject obj) {
+		VideoInfo videoInfo = new VideoInfo()
 				.setBv(obj.getString("bvid"))
 				.setAv(obj.getLong("aid"))
 				.setType(obj.getString("tname"))
@@ -125,11 +95,12 @@ public class ViewPipeline implements Pipeline {
 				.setDuration(obj.getLong("duration"))
 				.setOwner(obj.getJSONObject("owner").getString("name"))
 				.setDynamic(obj.getString("dynamic"));
+		videoInfoManager.updateOrInsert(videoInfo);
 	}
 
-	private VideoData newVideoData(JSONObject obj) {
+	private void saveVideoData(JSONObject obj) {
 		JSONObject stat = obj.getJSONObject("stat");
-		return new VideoData()
+		VideoData videoData = new VideoData()
 				.setAv(obj.getLong("aid"))
 				.setIssue(videoDataMapper.getNewIssue())
 				.setDanmaku(stat.getInteger("danmaku"))
@@ -137,23 +108,24 @@ public class ViewPipeline implements Pipeline {
 				.setLike(stat.getInteger("like"))
 				.setDislike(stat.getInteger("dislike"))
 				.setEvaluation(stat.getString("evaluation"));
+		videoDataManager.updateOrInsert(videoData);
 	}
 
-	private Stream<VideoPage> newVideoPageList(JSONObject obj) {
+	private void saveVideoPageList(JSONObject obj) {
 		JSONArray pages = obj.getJSONArray("pages");
 		if (!obj.containsKey("pages")) {
 			log.warn("该视频无page信息");
-			return Stream.empty();
+			return ;
 		}
-		return IntStream.range(0, obj.getJSONArray("pages").size())
+		IntStream.range(0, obj.getJSONArray("pages").size())
 				.mapToObj(pages::getJSONObject)
 				.map(this::newVideoPage)
-				.map(videoPage -> videoPage.setAv(obj.getLong("aid")));
+				.map(videoPage -> videoPage.setAv(obj.getLong("aid")))
+				.forEach(videoPageManager::updateOrInsert);
 	}
 
 	private VideoPage newVideoPage(JSONObject obj) {
 		return new VideoPage()
-//				.setAv(obj.getLong("aid"))
 				.setCid(obj.getLong("cid"))
 				.setPage(obj.getInteger("page"))
 				.setFrom(obj.getString("from"))
@@ -163,17 +135,18 @@ public class ViewPipeline implements Pipeline {
 				.setWeblink(obj.getString("weblink"));
 	}
 
-	private Owner newOwner(JSONObject obj) {
-		JSONObject owner = obj.getJSONObject("owner");
-		return new Owner()
-				.setUid(owner.getLong("mid"))
-				.setName(owner.getString("name"))
-				.setFace(owner.getString("face"));
+	private void saveOwner(JSONObject obj) {
+		JSONObject ownerJson = obj.getJSONObject("owner");
+		Owner owner = new Owner()
+				.setUid(ownerJson.getLong("mid"))
+				.setName(ownerJson.getString("name"))
+				.setFace(ownerJson.getString("face"));
+		ownerManager.updateOrInsert(owner);
 	}
 
-	private Right newRight(JSONObject obj) {
+	private void saveRight(JSONObject obj, Long av) {
 		JSONObject rights = obj.getJSONObject("rights");
-		return new Right()
+		Right right = new Right()
 				.setAv(obj.getLong("aid"))
 				.setBp(rights.getShort("bp"))
 				.setElec(rights.getShort("elec"))
@@ -187,6 +160,7 @@ public class ViewPipeline implements Pipeline {
 				.setIsCooperation(rights.getShort("is_cooperation"))
 				.setUgcPayPreview(rights.getShort("ugc_pay_preview"))
 				.setNoBackground(rights.getShort("no_background"));
+		rightManager.updateOrInsert(right);
 	}
 
 }
