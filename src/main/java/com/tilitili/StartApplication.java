@@ -8,17 +8,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import us.codecraft.webmagic.Spider;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Slf4j
 @SpringBootApplication
 @MapperScan("com.tilitili.common.mapper")
 public class StartApplication {
 
-	private final Spider spider;
+	private final List<Spider> spiderList;
+	private final Spider tagSpider;
 
 	@Autowired
-	public StartApplication(Spider viewSpider) {
-		this.spider = viewSpider;
+	public StartApplication(List<Spider> spiderList, Spider tagSpider) {
+		this.spiderList = spiderList;
+		this.tagSpider = tagSpider;
 	}
 
 	public static void main(String[] args) {
@@ -28,7 +31,12 @@ public class StartApplication {
 
 	@PostConstruct
 	public void run() {
-		spider.start();
+		spiderList.forEach(Spider::start);
+	}
+
+	@PostConstruct
+	public void test() {
+//		tagSpider.start();
 	}
 
 }

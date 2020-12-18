@@ -3,10 +3,13 @@ package com.jadlokin.test.webmagic;
 import com.tilitili.StartApplication;
 import com.tilitili.common.entity.VideoData;
 import com.tilitili.common.entity.VideoInfo;
+import com.tilitili.common.entity.VideoTag;
 import com.tilitili.common.entity.query.VideoInfoQuery;
+import com.tilitili.common.entity.query.VideoTagQuery;
 import com.tilitili.common.mapper.VideoDataMapper;
 import com.tilitili.common.mapper.VideoInfoMapper;
 import com.tilitili.common.mapper.VideoMapper;
+import com.tilitili.common.mapper.VideoTagMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import us.codecraft.webmagic.Spider;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,9 +37,16 @@ public class StartApplicationTest {
 	private VideoInfoMapper videoInfoMapper;
 	@Autowired
 	private VideoMapper videoMapper;
+	@Autowired
+	private VideoTagMapper videoTagMapper;
+	@Autowired
+	private Spider tagSpider;
+
 
 	@Test
 	public void main() {
+		List<VideoTag> videoTagList = videoTagMapper.list(new VideoTagQuery().setAv(12L));
+		videoTagList.forEach(System.out::println);
 	}
 
 //	private Long getPoint(VideoData newData, VideoData oldData) {
