@@ -2,9 +2,9 @@ package com.tilitili.spider.component.tag;
 
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.Tag;
-import com.tilitili.common.entity.VideoInfo;
+import com.tilitili.common.entity.VideoTagRelation;
 import com.tilitili.common.manager.TagManager;
-import com.tilitili.common.mapper.TagMapper;
+import com.tilitili.common.manager.VideoTagRelationManager;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.spider.util.Log;
 import com.tilitili.spider.view.BaseView;
@@ -28,11 +28,13 @@ public class TagPipeline implements Pipeline {
 
 	private final TagManager tagManager;
 	private final TaskMapper taskMapper;
+	private final VideoTagRelationManager videoTagRelationManager;
 
 	@Autowired
-	public TagPipeline(TagManager tagManager, TaskMapper taskMapper) {
+	public TagPipeline(TagManager tagManager, TaskMapper taskMapper, VideoTagRelationManager videoTagRelationManager) {
 		this.tagManager = tagManager;
 		this.taskMapper = taskMapper;
+		this.videoTagRelationManager = videoTagRelationManager;
 	}
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -76,6 +78,9 @@ public class TagPipeline implements Pipeline {
 						.setFeaturedCount(tagView.featured_count);
 
 				tagManager.updateOrInsert(tag);
+
+				VideoTagRelation videoTagRelation = new VideoTagRelation().setAv(av).setTagId(tagView.tag_id);
+				videoTagRelationManager.updateOrInsert(videoTagRelation);
 			}
 			taskMapper.updateStatusById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
 		} catch (Exception e) {
