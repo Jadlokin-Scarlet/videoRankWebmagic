@@ -62,7 +62,7 @@ public class TagScheduler extends DuplicateRemovedScheduler {
 		Log.info("receive spider video tag task: {}", taskMessage);
 		taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
 
-		return new Request(getTagForVideoByAv(taskMessage.getAv(), taskMessage.getId()));
+		return new Request(getTagForVideoByAv(taskMessage.getValue(), taskMessage.getId()));
 	}
 //
 //	private Stream<String> getUrlListByTagId(int tagId) {

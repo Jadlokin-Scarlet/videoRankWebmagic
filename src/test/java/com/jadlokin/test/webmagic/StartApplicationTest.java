@@ -45,8 +45,8 @@ public class StartApplicationTest {
 
 	@Test
 	public void main() {
-		List<VideoTag> videoTagList = videoTagMapper.list(new VideoTagQuery().setAv(12L));
-		videoTagList.forEach(System.out::println);
+//		List<VideoTag> videoTagList = videoTagMapper.list(new VideoTagQuery().setAv(12L));
+//		videoTagList.forEach(System.out::println);
 	}
 
 //	private Long getPoint(VideoData newData, VideoData oldData) {

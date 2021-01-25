@@ -16,12 +16,12 @@ import java.util.List;
 public class StartApplication {
 
 	private final List<Spider> spiderList;
-	private final Spider tagSpider;
+	private final Spider ownerSpider;
 
 	@Autowired
-	public StartApplication(List<Spider> spiderList, Spider tagSpider) {
+	public StartApplication(List<Spider> spiderList, Spider ownerSpider) {
 		this.spiderList = spiderList;
-		this.tagSpider = tagSpider;
+		this.ownerSpider = ownerSpider;
 	}
 
 	public static void main(String[] args) {
@@ -31,12 +31,12 @@ public class StartApplication {
 
 	@PostConstruct
 	public void run() {
-		spiderList.forEach(Spider::start);
+//		spiderList.forEach(Spider::start);
 	}
 
 	@PostConstruct
 	public void test() {
-//		tagSpider.start();
+		ownerSpider.start();
 	}
 
 }
