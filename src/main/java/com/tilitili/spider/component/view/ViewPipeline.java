@@ -68,7 +68,7 @@ public class ViewPipeline implements Pipeline {
 
 			JSONObject data = rep.getJSONObject("data");
 			saveVideoInfo(data);
-			saveVideoData(data);
+//			saveVideoData(data);
 			saveVideoPageList(data);
 			saveOwner(data);
 			saveRight(data, av);

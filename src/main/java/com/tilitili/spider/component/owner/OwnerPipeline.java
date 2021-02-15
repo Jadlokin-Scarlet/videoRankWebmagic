@@ -3,6 +3,7 @@ package com.tilitili.spider.component.owner;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.Owner;
 import com.tilitili.common.manager.OwnerManager;
+import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.spider.util.Log;
 import com.tilitili.spider.view.BaseView;
@@ -17,12 +18,13 @@ import us.codecraft.webmagic.pipeline.Pipeline;
 @Slf4j
 @Component
 public class OwnerPipeline implements Pipeline {
-
+	private final OwnerMapper ownerMapper;
 	private final OwnerManager ownerManager;
 	private final TaskMapper taskMapper;
 
 	@Autowired
-	public OwnerPipeline(OwnerManager ownerManager, TaskMapper taskMapper) {
+	public OwnerPipeline(OwnerMapper ownerMapper, OwnerManager ownerManager, TaskMapper taskMapper) {
+		this.ownerMapper = ownerMapper;
 		this.ownerManager = ownerManager;
 		this.taskMapper = taskMapper;
 	}
@@ -34,6 +36,7 @@ public class OwnerPipeline implements Pipeline {
 		BaseView<OwnerView> data = resultItems.get("data");
 		if (data.code != 0) {
 			Log.error("接口返回状态不为0: %s", data);
+			ownerMapper.update(new Owner().setUid(uid).setRemark(data.message));
 			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), data.message);
 			return;
 		}

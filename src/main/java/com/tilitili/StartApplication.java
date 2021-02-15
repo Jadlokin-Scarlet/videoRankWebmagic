@@ -31,12 +31,12 @@ public class StartApplication {
 
 	@PostConstruct
 	public void run() {
-//		spiderList.forEach(Spider::start);
+		spiderList.forEach(Spider::start);
 	}
 
 	@PostConstruct
 	public void test() {
-		ownerSpider.start();
+//		ownerSpider.start();
 	}
 
 }
