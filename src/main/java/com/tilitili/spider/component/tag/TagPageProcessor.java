@@ -5,15 +5,13 @@ import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
 import com.tilitili.spider.util.Log;
 import com.tilitili.spider.view.BaseView;
-import com.tilitili.spider.view.TagView;
+import com.tilitili.spider.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.utils.HttpConstant;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 

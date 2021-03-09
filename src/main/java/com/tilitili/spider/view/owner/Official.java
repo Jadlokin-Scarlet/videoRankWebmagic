@@ -1,4 +1,4 @@
-package com.tilitili.spider.view;
+package com.tilitili.spider.view.owner;
 
 public class Official {
     public Integer role;

@@ -1,4 +1,4 @@
-package com.tilitili.spider.view;
+package com.tilitili.spider.view.tag;
 
 public class TagCountView {
     public Integer view;

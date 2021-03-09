@@ -5,7 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
 import com.tilitili.spider.util.Log;
 import com.tilitili.spider.view.BaseView;
-import com.tilitili.spider.view.OwnerView;
+import com.tilitili.spider.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
