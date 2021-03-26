@@ -3,7 +3,7 @@ package com.tilitili.spider.component.tag;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
-import com.tilitili.spider.util.Log;
+import com.tilitili.common.utils.Log;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;

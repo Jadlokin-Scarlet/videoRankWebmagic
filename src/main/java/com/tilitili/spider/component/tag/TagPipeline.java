@@ -6,7 +6,7 @@ import com.tilitili.common.entity.VideoTagRelation;
 import com.tilitili.common.manager.TagManager;
 import com.tilitili.common.manager.VideoTagRelationManager;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.spider.util.Log;
+import com.tilitili.common.utils.Log;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@ package com.tilitili.spider.component.tag;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.message.TaskMessage;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.spider.util.Log;
+import com.tilitili.common.utils.Log;
 import com.tilitili.spider.util.object.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;

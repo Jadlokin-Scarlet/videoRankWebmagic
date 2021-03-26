@@ -5,7 +5,7 @@ import com.tilitili.common.entity.Owner;
 import com.tilitili.common.manager.OwnerManager;
 import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.spider.util.Log;
+import com.tilitili.common.utils.Log;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;

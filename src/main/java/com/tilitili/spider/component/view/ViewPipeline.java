@@ -55,7 +55,7 @@ public class ViewPipeline implements Pipeline {
 		long id = Long.parseLong(resultItems.get("id"));
 
 		try {
-			if (!rep.getInteger("code").equals(0)) {
+			if (!rep.getInteger("code").equals(0) || rep.getJSONObject("data") == null) {
 				log.error(rep.toString());
 				VideoInfo videoInfo = new VideoInfo().setAv(av).setStatus(rep.getInteger("code"));
 				videoInfoManager.updateOrInsert(videoInfo);
