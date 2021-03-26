@@ -59,7 +59,8 @@ public class ViewPipeline implements Pipeline {
 				log.error(rep.toString());
 				VideoInfo videoInfo = new VideoInfo().setAv(av).setStatus(rep.getInteger("code"));
 				videoInfoManager.updateOrInsert(videoInfo);
-				taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), rep.getString("message"));
+				String message = rep.getJSONObject("data") == null? "data is null": rep.getString("message");
+				taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), message);
 				return;
 			}else {
 				VideoInfo videoInfo = new VideoInfo().setAv(av).setStatus(0);
