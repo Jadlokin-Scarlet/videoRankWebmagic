@@ -12,7 +12,6 @@ import com.tilitili.spider.view.tagDetail.TagDetailView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -23,8 +22,7 @@ import java.util.*;
 import static com.tilitili.spider.util.BilibiliApi.getVideoForTagById;
 
 @Configuration
-@Component
-public class TagDetailSpider extends DuplicateRemovedScheduler implements PageProcessor, Pipeline {
+public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements PageProcessor, Pipeline {
 
     private final Integer thread = 1;
     private final Boolean exitWhenComplete = false;
@@ -38,8 +36,13 @@ public class TagDetailSpider extends DuplicateRemovedScheduler implements PagePr
     private final TaskMapper taskMapper;
     private final JmsService jmsService;
 
+    @Bean
+    public Spider tagDetailSpider(TagDetailSpiderConfig spiderConfig) {
+        return Spider.create(spiderConfig).addPipeline(spiderConfig).setScheduler(spiderConfig).setExitWhenComplete(exitWhenComplete).thread(thread);
+    }
+
     @Autowired
-    public TagDetailSpider(TaskMapper taskMapper, JmsService jmsService) {
+    public TagDetailSpiderConfig(TaskMapper taskMapper, JmsService jmsService) {
         this.taskMapper = taskMapper;
         this.jmsService = jmsService;
     }
@@ -99,11 +102,6 @@ public class TagDetailSpider extends DuplicateRemovedScheduler implements PagePr
     @Override
     public void push(Request request, Task task) {
         requestLinkedList.addFirst(request);
-    }
-
-    @Bean
-    public Spider ownerSpider(TagDetailSpider defaultSpider) {
-        return Spider.create(defaultSpider).addPipeline(defaultSpider).setScheduler(defaultSpider).setExitWhenComplete(exitWhenComplete).thread(thread);
     }
 
     @Override
