@@ -25,8 +25,15 @@ class ConvertTest {
     void videoViewToVideoInfo() {
         Convert INSTANCE = Mappers.getMapper( Convert.class );
         VideoView videoView = new VideoView();
-        videoView.pubdate = 1436866637L;
+//        videoView.aid = 672365514L;
+//        videoView.bvid = "BV1NU4y1Y7aT";
+//        videoView.tname = "单机游戏";
+//        videoView.pic = "http://i1.hdslb.com/bfs/archive/1630076127fd80d6f4c9bce28be20c0e8c812be4.jpg";
+//        videoView.title = "华彩乱战速通大赛-华彩乱战1Story模式EXNoContinue%（EXNM%）52分03秒通关";
+//        videoView.desc = "注：7:02处停顿了一下（有事处理）\\n第一届华彩乱战速通大赛参赛作品\\n通关用时：52:03.15";
+        videoView.pubdate = 1616744778L;
         videoView.copyright = 1;
+//        videoView.duration = 1L;
         VideoInfo videoInfo = INSTANCE.VideoViewToVideoInfo(videoView);
         System.out.println(videoInfo.getPubTime());
     }

@@ -16,12 +16,12 @@ import java.util.List;
 public class StartApplication {
 
 	private final List<Spider> spiderList;
-	private final Spider ownerSpider;
+	private final Spider viewSpider;
 
 	@Autowired
-	public StartApplication(List<Spider> spiderList, Spider ownerSpider) {
+	public StartApplication(List<Spider> spiderList, Spider viewSpider) {
 		this.spiderList = spiderList;
-		this.ownerSpider = ownerSpider;
+		this.viewSpider = viewSpider;
 	}
 
 	public static void main(String[] args) {

@@ -9,20 +9,24 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-@Mapper(componentModel = "spring", imports = java.time.Instant.class, uses = Convert.class)
+@Mapper(componentModel = "spring")
 public interface Convert {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
     @Mapping(target = "bv", source = "bvid")
     @Mapping(target = "av", source = "aid")
     @Mapping(target = "type", source = "tname")
     @Mapping(target = "copyright", expression = "java(videoView.copyright - 1 == 1)")
-    @Mapping(target = "pubTime", source = "pubdate")//expression = "java(formatter.format(Instant.ofEpochSecond(videoView.pubdate)))")
+    @Mapping(target = "img", source = "pic")
+    @Mapping(target = "name", source = "title")
+    @Mapping(target = "pubTime", expression = "java(pubTimeConvert(videoView.pubdate))")
+    @Mapping(target = "description", source = "desc")
     @Mapping(target = "owner", source = "videoView.owner.name")
     VideoInfo VideoViewToVideoInfo(VideoView videoView);
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
-    default String mapPubTime(Integer pubdate) {
-        return formatter.format(Instant.ofEpochSecond(pubdate));
+    default String pubTimeConvert(Long time) {
+        return formatter.format(Instant.ofEpochSecond(time));
     }
 
 }

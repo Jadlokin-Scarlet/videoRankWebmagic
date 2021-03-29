@@ -20,7 +20,7 @@ public class JmsService {
     }
 
     public TaskMessage receiveAndConvert(String nameSpace) {
-        TaskMessage taskMessage = (TaskMessage) jmsTemplate.receiveAndConvert("SpiderVideoTagTaskMessage");
+        TaskMessage taskMessage = (TaskMessage) jmsTemplate.receiveAndConvert(nameSpace);
         if (taskMessage == null) { return null; }
         Log.info("receive spider video tag task: {}", taskMessage);
         taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
