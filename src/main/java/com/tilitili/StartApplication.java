@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import us.codecraft.webmagic.Spider;
 
 import javax.annotation.PostConstruct;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -36,7 +39,7 @@ public class StartApplication {
 
 	@PostConstruct
 	public void test() {
-//		ownerSpider.start();
+//		viewSpider.start();
 	}
 
 }

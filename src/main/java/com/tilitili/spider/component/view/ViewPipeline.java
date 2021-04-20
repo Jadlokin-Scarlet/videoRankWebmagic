@@ -32,7 +32,7 @@ public class ViewPipeline implements Pipeline {
 	private final TaskMapper taskMapper;
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-			.withZone(ZoneId.systemDefault());
+			.withZone(ZoneId.of("Asia/Shanghai"));
 
 	@Autowired
 	public ViewPipeline(VideoPageManager videoPageManager, VideoInfoManager videoInfoManager, VideoDataManager videoDataManager, OwnerManager ownerManager, RightManager rightManager, VideoDataMapper videoDataMapper, TaskMapper taskMapper) {
@@ -53,7 +53,6 @@ public class ViewPipeline implements Pipeline {
 		}
 		long av = Long.parseLong(resultItems.get("av"));
 		long id = Long.parseLong(resultItems.get("id"));
-
 		try {
 			if (!rep.getInteger("code").equals(0) || rep.getJSONObject("data") == null) {
 				log.error(rep.toString());
@@ -66,14 +65,12 @@ public class ViewPipeline implements Pipeline {
 				VideoInfo videoInfo = new VideoInfo().setAv(av).setStatus(0);
 				videoInfoManager.updateOrInsert(videoInfo);
 			}
-
 			JSONObject data = rep.getJSONObject("data");
 			saveVideoInfo(data);
 //			saveVideoData(data);
 			saveVideoPageList(data);
 			saveOwner(data);
 			saveRight(data, av);
-
 			taskMapper.updateStatusById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
 		} catch (Exception e) {
 			log.error("持久化失败, av=" + av, e);

@@ -23,7 +23,7 @@ public class ViewPageProcessor implements PageProcessor {
 		String av = page.getUrl().get().split("&_id_=")[0].split("aid=")[1];
 		JSONObject rep = JSONObject.parseObject(page.getJson().get());
 		Integer code = rep.getInteger("code");
-		if (code.equals(-412)) {
+		if (code.equals(-412) || code.equals(-504)) {
 			log.error(rep.toString());
 			try {
 				Thread.sleep(20 * 60 * 1000);
@@ -41,7 +41,7 @@ public class ViewPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(10000).setSleepTime(10000)
+		return Site.me().setRetryTimes(20000).setSleepTime(20000)
 				.setCharset("UTF-8")
 				.setAcceptStatCode(new HashSet<>(
 						Arrays.asList(412, 200)

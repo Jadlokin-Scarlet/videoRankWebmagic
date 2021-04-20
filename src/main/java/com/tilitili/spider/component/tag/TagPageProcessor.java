@@ -44,7 +44,7 @@ public class TagPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(10000).setSleepTime(10000).setCharset("UTF-8").setAcceptStatCode(
+		return Site.me().setRetryTimes(20000).setSleepTime(20000).setCharset("UTF-8").setAcceptStatCode(
 				Sets.newHashSet(412, 200)
 		);
 	}

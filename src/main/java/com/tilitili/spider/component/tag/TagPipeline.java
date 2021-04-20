@@ -38,44 +38,22 @@ public class TagPipeline implements Pipeline {
 	}
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-			.withZone(ZoneId.systemDefault());
+			.withZone(ZoneId.of("Asia/Shanghai"));
 
 	@Override
 	public void process(ResultItems resultItems, Task task) {
 		Long av = resultItems.get("av");
 		Long taskId = resultItems.get("taskId");
 		BaseView<List<TagView>> data = resultItems.get("data");
-		if (data.code != 0) {
+		if (data.code != 0 || data.data == null) {
 			Log.error("接口返回状态不为0: %s", data);
-			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), data.message);
+			String message = data.data == null? "data is null": data.message;
+			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), message);
 			return;
 		}
 		try {
 			for (TagView tagView : data.data) {
-				Tag tag = new Tag().setId(tagView.tag_id)
-						.setName(tagView.tag_name)
-						.setCover(tagView.cover)
-						.setHeadCover(tagView.head_cover)
-						.setContent(tagView.content)
-						.setShortContent(tagView.short_content)
-						.setExternalType(tagView.type)
-						.setState(tagView.state)
-						.setExternalCreateTime(new Date(Instant.ofEpochSecond(tagView.ctime).toEpochMilli()))
-						.setIsAtten(tagView.is_atten)
-						.setLikes(tagView.likes)
-						.setHates(tagView.hates)
-						.setAttribute(tagView.attribute)
-						.setLiked(tagView.liked)
-						.setHated(tagView.hated)
-						.setExtraAttr(tagView.extra_attr)
-						.setTagType(tagView.tag_type)
-						.setIsActivity(tagView.is_activity)
-						.setColor(tagView.color)
-						.setAlpha(tagView.alpha)
-						.setIsSeason(tagView.is_season)
-						.setSubscribedCount(tagView.subscribed_count)
-						.setArchiveCount(tagView.archive_count)
-						.setFeaturedCount(tagView.featured_count);
+				Tag tag = new Tag().setId(tagView.tag_id).setName(tagView.tag_name).setCover(tagView.cover).setHeadCover(tagView.head_cover).setContent(tagView.content).setShortContent(tagView.short_content).setExternalType(tagView.type).setState(tagView.state).setExternalCreateTime(new Date(Instant.ofEpochSecond(tagView.ctime).toEpochMilli())).setIsAtten(tagView.is_atten).setLikes(tagView.likes).setHates(tagView.hates).setAttribute(tagView.attribute).setLiked(tagView.liked).setHated(tagView.hated).setExtraAttr(tagView.extra_attr).setTagType(tagView.tag_type).setIsActivity(tagView.is_activity).setColor(tagView.color).setAlpha(tagView.alpha).setIsSeason(tagView.is_season).setSubscribedCount(tagView.subscribed_count).setArchiveCount(tagView.archive_count).setFeaturedCount(tagView.featured_count);
 
 				tagManager.updateOrInsert(tag);
 
