@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.*;
 import com.tilitili.common.manager.*;
+import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.common.mapper.VideoDataMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +31,13 @@ public class ViewPipeline implements Pipeline {
 
 	private final VideoDataMapper videoDataMapper;
 	private final TaskMapper taskMapper;
+	private final OwnerMapper ownerMapper;
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 			.withZone(ZoneId.of("Asia/Shanghai"));
 
 	@Autowired
-	public ViewPipeline(VideoPageManager videoPageManager, VideoInfoManager videoInfoManager, VideoDataManager videoDataManager, OwnerManager ownerManager, RightManager rightManager, VideoDataMapper videoDataMapper, TaskMapper taskMapper) {
+	public ViewPipeline(VideoPageManager videoPageManager, VideoInfoManager videoInfoManager, VideoDataManager videoDataManager, OwnerManager ownerManager, RightManager rightManager, VideoDataMapper videoDataMapper, TaskMapper taskMapper, OwnerMapper ownerMapper) {
 		this.videoPageManager = videoPageManager;
 		this.videoInfoManager = videoInfoManager;
 		this.videoDataManager = videoDataManager;
@@ -43,6 +45,7 @@ public class ViewPipeline implements Pipeline {
 		this.rightManager = rightManager;
 		this.videoDataMapper = videoDataMapper;
 		this.taskMapper = taskMapper;
+		this.ownerMapper = ownerMapper;
 	}
 
 	@Override
@@ -93,6 +96,13 @@ public class ViewPipeline implements Pipeline {
 				.setDuration(obj.getLong("duration"))
 				.setOwner(obj.getJSONObject("owner").getString("name"))
 				.setDynamic(obj.getString("dynamic"));
+
+		Owner owner = ownerMapper.getByName(videoInfo.getOwner());
+		// 拉黑
+		if (owner != null && owner.getStatus() == 1) {
+			videoInfo.setIsDelete(true);
+		}
+
 		videoInfoManager.updateOrInsert(videoInfo);
 	}
 
