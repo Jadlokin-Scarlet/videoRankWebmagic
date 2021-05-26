@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
 import com.tilitili.common.utils.Log;
+import com.tilitili.spider.util.QQUtil;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -17,6 +20,15 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class OwnerPageProcessor implements PageProcessor {
+	private final QQUtil qqUtil;
+
+	@Value("${spider.wait-time}")
+	private Integer waitTime;
+
+	@Autowired
+	public OwnerPageProcessor(QQUtil qqUtil) {
+		this.qqUtil = qqUtil;
+	}
 
 	@Override
 	public void process(Page page) {
@@ -25,8 +37,9 @@ public class OwnerPageProcessor implements PageProcessor {
 		BaseView<OwnerView> data = JSONObject.parseObject(page.getJson().get(), new TypeReference<BaseView<OwnerView>>() {});
 		if (Objects.equals(data.code, -412)) {
 			Log.error("被风控: ", data);
+			qqUtil.sendRiskError(this.getClass());
 			try {
-				Thread.sleep(20 * 60 * 1000);
+				Thread.sleep(waitTime * 60 * 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

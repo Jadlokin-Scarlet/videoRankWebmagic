@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
 import com.tilitili.common.utils.Log;
+import com.tilitili.spider.util.QQUtil;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -18,8 +21,15 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class TagPageProcessor implements PageProcessor {
+	private final QQUtil qqUtil;
 
-//	private VideoInfoMapper videoInfoMapper;
+	@Value("${spider.wait-time}")
+	private Integer waitTime;
+
+	@Autowired
+	public TagPageProcessor(QQUtil qqUtil) {
+		this.qqUtil = qqUtil;
+	}
 
 	@Override
 	public void process(Page page) {
@@ -28,8 +38,9 @@ public class TagPageProcessor implements PageProcessor {
 		BaseView<List<TagView>> data = JSONObject.parseObject(page.getJson().get(), new TypeReference<BaseView<List<TagView>>>() {});
 		if (Objects.equals(data.code, -412)) {
 			Log.error("被风控: ", data);
+			qqUtil.sendRiskError(this.getClass());
 			try {
-				Thread.sleep(20 * 60 * 1000);
+				Thread.sleep(waitTime * 60 * 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -3,7 +3,10 @@ package com.tilitili.spider.component.view;
 import com.alibaba.fastjson.JSONObject;
 import com.tilitili.common.entity.VideoInfo;
 import com.tilitili.common.entity.VideoPage;
+import com.tilitili.spider.util.QQUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -15,6 +18,15 @@ import java.util.HashSet;
 @Slf4j
 @Component
 public class ViewPageProcessor implements PageProcessor {
+	private final QQUtil qqUtil;
+
+	@Value("${spider.wait-time}")
+	private Integer waitTime;
+
+	@Autowired
+	public ViewPageProcessor(QQUtil qqUtil) {
+		this.qqUtil = qqUtil;
+	}
 
 	@Override
 	public void process(Page page) {
@@ -25,8 +37,9 @@ public class ViewPageProcessor implements PageProcessor {
 		Integer code = rep.getInteger("code");
 		if (code.equals(-412) || code.equals(-504)) {
 			log.error(rep.toString());
+			qqUtil.sendRiskError(this.getClass());
 			try {
-				Thread.sleep(20 * 60 * 1000);
+				Thread.sleep(waitTime * 60 * 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

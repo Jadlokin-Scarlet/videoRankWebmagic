@@ -10,10 +10,12 @@ import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.common.utils.Log;
 import com.tilitili.spider.service.JmsService;
 import com.tilitili.spider.util.Convert;
+import com.tilitili.spider.util.QQUtil;
 import com.tilitili.spider.view.BaseView;
 import com.tilitili.spider.view.tagDetail.TagDetailView;
 import com.tilitili.spider.view.view.VideoView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import us.codecraft.webmagic.*;
@@ -27,6 +29,8 @@ import static com.tilitili.spider.util.BilibiliApi.getVideoForTagById;
 
 @Configuration
 public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements PageProcessor, Pipeline {
+    @Value("${spider.wait-time}")
+    private Integer waitTime;
 
     private final Integer thread = 1;
     private final Boolean exitWhenComplete = false;
@@ -41,6 +45,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     private final TaskMapper taskMapper;
     private final JmsService jmsService;
     private final Convert convert;
+    private final QQUtil qqUtil;
 
     @Bean
     public Spider tagDetailSpider(TagDetailSpiderConfig spiderConfig) {
@@ -48,7 +53,8 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     }
 
     @Autowired
-    public TagDetailSpiderConfig(VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Convert convert) {
+    public TagDetailSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Convert convert) {
+        this.qqUtil = qqUtil;
         this.videoInfoManager = videoInfoManager;
         this.taskMapper = taskMapper;
         this.jmsService = jmsService;
@@ -74,8 +80,9 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
         BaseView<TagDetailView> data = JSONObject.parseObject(page.getJson().get(), new TypeReference<BaseView<TagDetailView>>() {});
         if (Objects.equals(data.code, -412)) {
             Log.error("被风控: ", data);
+            qqUtil.sendRiskError(this.getClass());
             try {
-                Thread.sleep(20 * 60 * 1000);
+                Thread.sleep(waitTime * 60 * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
