@@ -55,16 +55,12 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     private final LinkedList<Request> requestLinkedList = new LinkedList<>();
 
     private final JmsService jmsService;
-    private final Convert convert;
     private final QQUtil qqUtil;
 
     private final VideoInfoManager videoInfoManager;
-    private final VideoDataManager videoDataManager;
     private final VideoPageManager videoPageManager;
     private final OwnerManager ownerManager;
-    private final RightManager rightManager;
 
-    private final VideoDataMapper videoDataMapper;
     private final TaskMapper taskMapper;
     private final OwnerMapper ownerMapper;
     private final TmpDataNewMapper tmpDataNewMapper;
@@ -74,21 +70,14 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     private final ToOwner toOwner;
     private final ToTmpDataNew toTmpDataNew;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            .withZone(ZoneId.of("Asia/Shanghai"));
-
     @Autowired
-    public ViewSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Convert convert, VideoDataManager videoDataManager, VideoPageManager videoPageManager, OwnerManager ownerManager, RightManager rightManager, VideoDataMapper videoDataMapper, OwnerMapper ownerMapper, TmpDataNewMapper tmpDataNewMapper, ToVideoInfo toVideoInfo, ToVideoPage toVideoPage, ToOwner toOwner, ToTmpDataNew toTmpDataNew) {
+    public ViewSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, VideoPageManager videoPageManager, OwnerManager ownerManager, OwnerMapper ownerMapper, TmpDataNewMapper tmpDataNewMapper, ToVideoInfo toVideoInfo, ToVideoPage toVideoPage, ToOwner toOwner, ToTmpDataNew toTmpDataNew) {
         this.qqUtil = qqUtil;
         this.videoInfoManager = videoInfoManager;
         this.taskMapper = taskMapper;
         this.jmsService = jmsService;
-        this.convert = convert;
-        this.videoDataManager = videoDataManager;
         this.videoPageManager = videoPageManager;
         this.ownerManager = ownerManager;
-        this.rightManager = rightManager;
-        this.videoDataMapper = videoDataMapper;
         this.ownerMapper = ownerMapper;
         this.tmpDataNewMapper = tmpDataNewMapper;
         this.toVideoInfo = toVideoInfo;
@@ -178,6 +167,7 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
                 tmpDataNewMapper.updateTmpDataNew(tmpDataNew);
             }
 
+            taskMapper.updateStatusById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
         } catch (Exception e) {
             log.error("持久化失败, av=" + av, e);
             taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
@@ -193,114 +183,5 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     public Site getSite() {
         return Site.me().setRetryTimes(retryTimes).setSleepTime(sleepTime).setCharset(charset).setAcceptStatCode(acceptStatCode);
     }
-//
-//    private void saveVideoInfo(JSONObject obj) {
-//        VideoInfo videoInfo = new VideoInfo()
-//                .setBv(obj.getString("bvid"))
-//                .setAv(obj.getLong("aid"))
-//                .setType(obj.getString("tname"))
-//                .setCopyright(obj.getInteger("copyright") - 1 == 1)
-//                .setImg(obj.getString("pic"))
-//                .setName(obj.getString("title"))
-//                .setPubTime(formatter.format(Instant.ofEpochSecond(obj.getLong("pubdate"))))
-//                .setDescription(obj.getString("desc"))
-//                .setState(obj.getLong("state"))
-//                .setAttribute(obj.getLong("attribute"))
-//                .setDuration(obj.getLong("duration"))
-//                .setOwner(obj.getJSONObject("owner").getString("name"))
-//                .setDynamic(obj.getString("dynamic"));
-//
-//        Owner owner = ownerMapper.getByName(videoInfo.getOwner());
-//        // 拉黑
-//        if (owner != null && owner.getStatus() == 1) {
-//            videoInfo.setIsDelete(true);
-//        }
-//
-//        videoInfoManager.updateOrInsert(videoInfo);
-//    }
-//
-//    private void saveVideoData(JSONObject obj) {
-//        JSONObject stat = obj.getJSONObject("stat");
-//        VideoData videoData = new VideoData()
-//                .setAv(obj.getLong("aid"))
-//                .setIssue(videoDataMapper.getNewIssue())
-//                .setDanmaku(stat.getInteger("danmaku"))
-//                .setShare(stat.getInteger("share"))
-//                .setLike(stat.getInteger("like"))
-//                .setDislike(stat.getInteger("dislike"))
-//                .setEvaluation(stat.getString("evaluation"));
-//        videoDataManager.updateOrInsert(videoData);
-//    }
-//
-//    private void saveVideoPageList(JSONObject obj) {
-//        JSONArray pages = obj.getJSONArray("pages");
-//        if (!obj.containsKey("pages")) {
-//            log.warn("该视频无page信息");
-//            return ;
-//        }
-//        IntStream.range(0, obj.getJSONArray("pages").size())
-//                .mapToObj(pages::getJSONObject)
-//                .map(this::newVideoPage)
-//                .map(videoPage -> videoPage.setAv(obj.getLong("aid")))
-//                .forEach(videoPageManager::updateOrInsert);
-//    }
-//
-//    private VideoPage newVideoPage(JSONObject obj) {
-//        return new VideoPage()
-//                .setCid(obj.getLong("cid"))
-//                .setPage(obj.getInteger("page"))
-//                .setFrom(obj.getString("from"))
-//                .setPart(obj.getString("part"))
-//                .setDuration(obj.getLong("duration"))
-//                .setVid(obj.getString("vid"))
-//                .setWeblink(obj.getString("weblink"));
-//    }
-//
-//    private void saveOwner(JSONObject obj) {
-//        JSONObject ownerJson = obj.getJSONObject("owner");
-//        Owner owner = new Owner()
-//                .setUid(ownerJson.getLong("mid"))
-//                .setName(ownerJson.getString("name"))
-//                .setFace(ownerJson.getString("face"));
-//        ownerManager.updateOrInsert(owner);
-//    }
-//
-//    private void saveRight(JSONObject obj, Long av) {
-//        JSONObject rights = obj.getJSONObject("rights");
-//        Right right = new Right()
-//                .setAv(obj.getLong("aid"))
-//                .setBp(rights.getShort("bp"))
-//                .setElec(rights.getShort("elec"))
-//                .setDownload(rights.getShort("download"))
-//                .setMovie(rights.getShort("movie"))
-//                .setPay(rights.getShort("pay"))
-//                .setHd5(rights.getShort("hd5"))
-//                .setNoReprint(rights.getShort("no_reprint"))
-//                .setAutoplay(rights.getShort("autoplay"))
-//                .setUgcPay(rights.getShort("ugc_pay"))
-//                .setIsCooperation(rights.getShort("is_cooperation"))
-//                .setUgcPayPreview(rights.getShort("ugc_pay_preview"))
-//                .setNoBackground(rights.getShort("no_background"));
-//        rightManager.updateOrInsert(right);
-//    }
-//
-//    private void calculationVideoDataVideoData(JSONObject obj) {
-//        JSONObject stat = obj.getJSONObject("stat");
-//        VideoData videoData = new VideoData()
-//                .setAv(obj.getLong("aid"))
-//                .setIssue(videoDataMapper.getNewIssue())
-//                .setView(stat.getInteger("view"))
-//                .setDanmaku(stat.getInteger("danmaku"))
-//                .setReply(stat.getInteger("reply"))
-//                .setFavorite(stat.getInteger("favorite"))
-//                .setCoin(stat.getInteger("coin"))
-//                .setShare(stat.getInteger("share"))
-//                .setLike(stat.getInteger("like"))
-//                .setDislike(stat.getInteger("dislike"))
-//                .setEvaluation(stat.getString("evaluation"));
-//
-//
-//
-//
-//    }
+
 }
