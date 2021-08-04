@@ -2,7 +2,7 @@ package com.tilitili.spider.util;
 
 import com.tilitili.common.StartApplication;
 import com.tilitili.common.entity.VideoInfo;
-import com.tilitili.spider.view.view.VideoView;
+import com.tilitili.common.entity.view.view.VideoView;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

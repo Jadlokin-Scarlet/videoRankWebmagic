@@ -7,7 +7,7 @@ import us.codecraft.webmagic.Spider;
 @Configuration
 public class ViewSpiderConfiguration {
 
-	@Bean
+//	@Bean
 	public Spider viewSpider(ViewPageProcessor viewPageProcessor, ViewPipeline viewPipeline, ViewScheduler viewScheduler) {
 		return Spider.create(viewPageProcessor)
 				.addPipeline(viewPipeline)

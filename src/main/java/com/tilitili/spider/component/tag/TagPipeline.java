@@ -6,9 +6,10 @@ import com.tilitili.common.entity.VideoTagRelation;
 import com.tilitili.common.manager.TagManager;
 import com.tilitili.common.manager.VideoTagRelationManager;
 import com.tilitili.common.mapper.TaskMapper;
+import com.tilitili.common.mapper.VideoTagRelationMapper;
 import com.tilitili.common.utils.Log;
-import com.tilitili.spider.view.BaseView;
-import com.tilitili.spider.view.tag.TagView;
+import com.tilitili.common.entity.view.BaseView;
+import com.tilitili.common.entity.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,12 +30,14 @@ public class TagPipeline implements Pipeline {
 	private final TagManager tagManager;
 	private final TaskMapper taskMapper;
 	private final VideoTagRelationManager videoTagRelationManager;
+	private final VideoTagRelationMapper videoTagRelationMapper;
 
 	@Autowired
-	public TagPipeline(TagManager tagManager, TaskMapper taskMapper, VideoTagRelationManager videoTagRelationManager) {
+	public TagPipeline(TagManager tagManager, TaskMapper taskMapper, VideoTagRelationManager videoTagRelationManager, VideoTagRelationMapper videoTagRelationMapper) {
 		this.tagManager = tagManager;
 		this.taskMapper = taskMapper;
 		this.videoTagRelationManager = videoTagRelationManager;
+		this.videoTagRelationMapper = videoTagRelationMapper;
 	}
 
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -52,6 +55,7 @@ public class TagPipeline implements Pipeline {
 			return;
 		}
 		try {
+			videoTagRelationMapper.deleteByAv(av);
 			for (TagView tagView : data.data) {
 				Tag tag = new Tag().setId(tagView.tag_id).setName(tagView.tag_name).setCover(tagView.cover).setHeadCover(tagView.head_cover).setContent(tagView.content).setShortContent(tagView.short_content).setExternalType(tagView.type).setState(tagView.state).setExternalCreateTime(new Date(Instant.ofEpochSecond(tagView.ctime).toEpochMilli())).setIsAtten(tagView.is_atten).setLikes(tagView.likes).setHates(tagView.hates).setAttribute(tagView.attribute).setLiked(tagView.liked).setHated(tagView.hated).setExtraAttr(tagView.extra_attr).setTagType(tagView.tag_type).setIsActivity(tagView.is_activity).setColor(tagView.color).setAlpha(tagView.alpha).setIsSeason(tagView.is_season).setSubscribedCount(tagView.subscribed_count).setArchiveCount(tagView.archive_count).setFeaturedCount(tagView.featured_count);
 

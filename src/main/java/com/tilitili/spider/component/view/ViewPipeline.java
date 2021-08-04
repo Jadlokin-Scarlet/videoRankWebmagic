@@ -70,7 +70,7 @@ public class ViewPipeline implements Pipeline {
 			}
 			JSONObject data = rep.getJSONObject("data");
 			saveVideoInfo(data);
-//			saveVideoData(data);
+			saveVideoData(data);
 			saveVideoPageList(data);
 			saveOwner(data);
 			saveRight(data, av);
@@ -171,4 +171,23 @@ public class ViewPipeline implements Pipeline {
 		rightManager.updateOrInsert(right);
 	}
 
+	private void calculationVideoDataVideoData(JSONObject obj) {
+		JSONObject stat = obj.getJSONObject("stat");
+		VideoData videoData = new VideoData()
+				.setAv(obj.getLong("aid"))
+				.setIssue(videoDataMapper.getNewIssue())
+				.setView(stat.getInteger("view"))
+				.setDanmaku(stat.getInteger("danmaku"))
+				.setReply(stat.getInteger("reply"))
+				.setFavorite(stat.getInteger("favorite"))
+				.setCoin(stat.getInteger("coin"))
+				.setShare(stat.getInteger("share"))
+				.setLike(stat.getInteger("like"))
+				.setDislike(stat.getInteger("dislike"))
+				.setEvaluation(stat.getString("evaluation"));
+
+
+
+
+	}
 }

@@ -1,6 +1,10 @@
 package com.tilitili.spider.util;
 
 public class BilibiliApi {
+    public static String getVideoByAv(String av, Long batchId) {
+        return String.format("https://api.bilibili.com/x/web-interface/view?aid=%s&_id_=%s", av, batchId);
+    }
+
     public static String getTagForVideoByAv(String av, Long batchId) {
         return String.format("https://api.bilibili.com/x/web-interface/view/detail/tag?aid=%s&_id_=%s", av, batchId);
     }

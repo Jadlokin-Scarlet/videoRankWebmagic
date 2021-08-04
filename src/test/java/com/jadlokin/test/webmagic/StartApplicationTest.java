@@ -6,6 +6,7 @@ import com.tilitili.common.entity.VideoInfo;
 import com.tilitili.common.entity.VideoTag;
 import com.tilitili.common.entity.query.VideoInfoQuery;
 import com.tilitili.common.entity.query.VideoTagQuery;
+import com.tilitili.common.manager.MiraiManager;
 import com.tilitili.common.mapper.VideoDataMapper;
 import com.tilitili.common.mapper.VideoInfoMapper;
 import com.tilitili.common.mapper.VideoMapper;
@@ -38,15 +39,14 @@ public class StartApplicationTest {
 	@Autowired
 	private VideoMapper videoMapper;
 	@Autowired
-	private VideoTagMapper videoTagMapper;
-	@Autowired
 	private Spider tagSpider;
+	@Autowired
+	private MiraiManager miraiManager;
 
 
 	@Test
 	public void main() {
-//		List<VideoTag> videoTagList = videoTagMapper.list(new VideoTagQuery().setAv(12L));
-//		videoTagList.forEach(System.out::println);
+		miraiManager.sendFriendMessage("Plain", "?");
 	}
 
 //	private Long getPoint(VideoData newData, VideoData oldData) {

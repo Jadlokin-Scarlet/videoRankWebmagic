@@ -6,8 +6,8 @@ import com.tilitili.common.manager.OwnerManager;
 import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.common.utils.Log;
-import com.tilitili.spider.view.BaseView;
-import com.tilitili.spider.view.owner.OwnerView;
+import com.tilitili.common.entity.view.BaseView;
+import com.tilitili.common.entity.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class OwnerPipeline implements Pipeline {
 		}
 		try {
 			OwnerView ownerView = data.data;
-			Owner owner = new Owner().setUid(ownerView.mid).setName(ownerView.name).setFace(ownerView.face).setSex(ownerView.sex).setSign(ownerView.sign).setRank(ownerView.rank).setLevel(ownerView.level).setJointime(ownerView.jointime).setMoral(ownerView.moral).setSilence(ownerView.silence).setBirthday(ownerView.birthday).setCoins(ownerView.coins).setFansBadge(ownerView.fans_badge).setOfficialRole(ownerView.official.role).setOfficialTitle(ownerView.official.title).setOfficialDesc(ownerView.official.desc).setOfficialType(ownerView.official.type).setVipType(ownerView.vip.type).setVipStatus(ownerView.vip.status).setVipThemeType(ownerView.vip.theme_type).setVipLabelPath(ownerView.vip.label.path).setVipLabelText(ownerView.vip.label.text).setVipLabelTheme(ownerView.vip.label.label_theme).setVipAvatarSubscript(ownerView.vip.avatar_subscript).setVipNicknameColor(ownerView.vip.nickname_color).setPendantPid(ownerView.pendant.pid).setPendantName(ownerView.pendant.name).setPendantImage(ownerView.pendant.image).setPendantExpire(ownerView.pendant.expire).setPendantImageEnhance(ownerView.pendant.image_enhance).setPendantImageEnhanceFrame(ownerView.pendant.image_enhance_frame).setNameplateNid(ownerView.nameplate.nid).setNameplateName(ownerView.nameplate.name).setNameplateImage(ownerView.nameplate.image).setNameplateImageSmall(ownerView.nameplate.image_small).setNameplateLevel(ownerView.nameplate.level).setNameplateCondition(ownerView.nameplate.condition).setTopPhoto(ownerView.top_photo);
+			Owner owner = new Owner().setUid(ownerView.mid).setName(ownerView.name).setFace(ownerView.face).setSex(ownerView.sex).setSign(ownerView.sign).setRank(ownerView.rank).setLevel(ownerView.level).setJointime(ownerView.jointime).setMoral(ownerView.moral).setSilence(ownerView.silence).setBirthday(ownerView.birthday).setCoins(ownerView.coins).setFansBadge(ownerView.fans_badge).setOfficialRole(ownerView.official.role).setOfficialTitle(ownerView.official.title).setOfficialDesc(ownerView.official.desc).setOfficialType(ownerView.official.type).setVipType(ownerView.vip.type).setVipStatus(ownerView.vip.status).setVipThemeType(ownerView.vip.theme_type).setVipLabelPath(ownerView.vip.label.path).setVipLabelText(ownerView.vip.label.text).setVipLabelTheme(ownerView.vip.label.label_theme).setVipAvatarSubscript(ownerView.vip.avatar_subscript).setVipNicknameColor(ownerView.vip.nickname_color).setPendantPid(ownerView.pendant.pid).setPendantName(ownerView.pendant.name).setPendantImage(ownerView.pendant.image).setPendantExpire(ownerView.pendant.expire).setPendantImageEnhance(ownerView.pendant.image_enhance).setPendantImageEnhanceFrame(ownerView.pendant.image_enhance_frame).setNameplateNid(ownerView.nameplate.nid).setNameplateName(ownerView.nameplate.name).setNameplateImage(ownerView.nameplate.image).setNameplateImageSmall(ownerView.nameplate.image_small).setNameplateLevel(ownerView.nameplate.level).setNameplateCondition(ownerView.nameplate.condition).setTopPhoto(ownerView.top_photo).setRoomId(ownerView.live_room.roomid).setRoomUrl(ownerView.live_room.url);
 
 			ownerManager.updateOrInsert(owner);
 

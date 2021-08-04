@@ -1,4 +1,4 @@
-package com.tilitili.spider.util;
+package com.tilitili.spider.convert;
 
 import com.tilitili.common.entity.VideoInfo;
 import com.tilitili.common.entity.view.view.VideoView;
@@ -10,9 +10,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Mapper(componentModel = "spring")
-public interface Convert {
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
+public interface ToVideoInfo {
 
     @Mapping(target = "bv", source = "bvid")
     @Mapping(target = "av", source = "aid")
@@ -22,9 +20,14 @@ public interface Convert {
     @Mapping(target = "name", source = "title")
     @Mapping(target = "pubTime", expression = "java(pubTimeConvert(videoView.pubdate))")
     @Mapping(target = "description", source = "desc")
+    @Mapping(target = "state", source = "state")
+    @Mapping(target = "attribute", source = "attribute")
+    @Mapping(target = "duration", source = "duration")
+    @Mapping(target = "dynamic", source = "dynamic")
     @Mapping(target = "owner", source = "videoView.owner.name")
-    VideoInfo VideoViewToVideoInfo(VideoView videoView);
+    VideoInfo fromVideoView(VideoView videoView);
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Shanghai"));
     default String pubTimeConvert(Long time) {
         return formatter.format(Instant.ofEpochSecond(time));
     }
