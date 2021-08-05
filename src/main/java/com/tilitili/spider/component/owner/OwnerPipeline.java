@@ -5,7 +5,6 @@ import com.tilitili.common.entity.Owner;
 import com.tilitili.common.manager.OwnerManager;
 import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.common.utils.Log;
 import com.tilitili.common.entity.view.BaseView;
 import com.tilitili.common.entity.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class OwnerPipeline implements Pipeline {
 		Long taskId = resultItems.get("taskId");
 		BaseView<OwnerView> data = resultItems.get("data");
 		if (data.code != 0) {
-			Log.error("接口返回状态不为0: %s", data);
+			log.error("接口返回状态不为0: {}", data);
 			ownerMapper.update(new Owner().setUid(uid).setRemark(data.message));
 			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), data.message);
 			return;

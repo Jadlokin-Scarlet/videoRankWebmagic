@@ -4,24 +4,18 @@ package com.tilitili.spider.component.tag;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.message.TaskMessage;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.common.utils.Log;
-import com.tilitili.spider.util.object.Timer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Request;
-import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
-import us.codecraft.webmagic.scheduler.MonitorableScheduler;
 
-import java.time.Instant;
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static com.tilitili.spider.util.BilibiliApi.getTagForVideoByAv;
 
+@Slf4j
 @Component
 public class TagScheduler extends DuplicateRemovedScheduler {
 	private final TaskMapper taskMapper;
@@ -59,7 +53,7 @@ public class TagScheduler extends DuplicateRemovedScheduler {
 		if (taskMessage == null) {
 			return null;
 		}
-		Log.info("receive spider video tag task: {}", taskMessage);
+		log.info("receive spider video tag task: {}", taskMessage);
 		taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
 
 		return new Request(getTagForVideoByAv(taskMessage.getValue(), taskMessage.getId()));

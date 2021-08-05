@@ -17,7 +17,6 @@ import com.tilitili.common.manager.VideoPageManager;
 import com.tilitili.common.mapper.OwnerMapper;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.common.mapper.TmpDataNewMapper;
-import com.tilitili.common.utils.Log;
 import com.tilitili.spider.convert.ToOwner;
 import com.tilitili.spider.convert.ToTmpDataNew;
 import com.tilitili.spider.convert.ToVideoInfo;
@@ -47,8 +46,8 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
 
     private final Integer thread = 1;
     private final Boolean exitWhenComplete = false;
-    private final Integer retryTimes = 10000;
-    private final Integer sleepTime = 10000;
+    private final Integer retryTimes = 9000;
+    private final Integer sleepTime = 9000;
     private final String charset = "UTF-8";
     private final Set<Integer> acceptStatCode = new HashSet<>(Arrays.asList(412, 200));
 
@@ -96,7 +95,7 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
         if (requestLinkedList.isEmpty()) {
             TaskMessage taskMessage = jmsService.receiveAndConvert(TaskReason.SUPPLEMENT_VIDEO.destination);
             if (taskMessage == null) { return null;}
-            Log.info("receive spider video view task: {}", taskMessage);
+            log.info("receive spider video view task: {}", taskMessage);
             requestLinkedList.add(new Request(getVideoByAv(taskMessage.getValue(), taskMessage.getId())));
         }
         return requestLinkedList.poll();

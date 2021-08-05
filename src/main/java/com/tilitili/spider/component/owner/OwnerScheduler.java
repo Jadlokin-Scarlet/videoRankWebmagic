@@ -4,7 +4,7 @@ package com.tilitili.spider.component.owner;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.message.TaskMessage;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.common.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 import static com.tilitili.spider.util.BilibiliApi.getOwnerByUid;
 
+@Slf4j
 @Component
 public class OwnerScheduler extends DuplicateRemovedScheduler {
 	private final TaskMapper taskMapper;
@@ -46,7 +47,7 @@ public class OwnerScheduler extends DuplicateRemovedScheduler {
 		if (taskMessage == null) {
 			return null;
 		}
-		Log.info("receive spider video owner task: {}", taskMessage);
+		log.info("receive spider video owner task: {}", taskMessage);
 		taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
 
 		return new Request(getOwnerByUid(taskMessage.getValue(), taskMessage.getId()));

@@ -7,7 +7,6 @@ import com.tilitili.common.manager.TagManager;
 import com.tilitili.common.manager.VideoTagRelationManager;
 import com.tilitili.common.mapper.TaskMapper;
 import com.tilitili.common.mapper.VideoTagRelationMapper;
-import com.tilitili.common.utils.Log;
 import com.tilitili.common.entity.view.BaseView;
 import com.tilitili.common.entity.view.tag.TagView;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,7 @@ public class TagPipeline implements Pipeline {
 		Long taskId = resultItems.get("taskId");
 		BaseView<List<TagView>> data = resultItems.get("data");
 		if (data.code != 0 || data.data == null) {
-			Log.error("接口返回状态不为0: %s", data);
+			log.error("接口返回状态不为0: {}", data);
 			String message = data.data == null? "data is null": data.message;
 			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), message);
 			return;

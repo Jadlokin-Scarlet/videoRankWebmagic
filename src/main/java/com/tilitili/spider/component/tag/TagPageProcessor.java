@@ -3,7 +3,6 @@ package com.tilitili.spider.component.tag;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.collect.Sets;
-import com.tilitili.common.utils.Log;
 import com.tilitili.spider.util.QQUtil;
 import com.tilitili.common.entity.view.BaseView;
 import com.tilitili.common.entity.view.tag.TagView;
@@ -37,7 +36,7 @@ public class TagPageProcessor implements PageProcessor {
 		Long taskId = Long.valueOf(page.getUrl().regex("_id_=([^&]+)").get());
 		BaseView<List<TagView>> data = JSONObject.parseObject(page.getJson().get(), new TypeReference<BaseView<List<TagView>>>() {});
 		if (Objects.equals(data.code, -412)) {
-			Log.error("被风控: ", data);
+			log.error("被风控: {}", data);
 			qqUtil.sendRiskError(this.getClass());
 			try {
 				Thread.sleep(waitTime * 60 * 1000);

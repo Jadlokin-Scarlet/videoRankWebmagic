@@ -7,13 +7,13 @@ import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.message.TaskMessage;
 import com.tilitili.common.manager.VideoInfoManager;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.common.utils.Log;
 import com.tilitili.spider.service.JmsService;
 import com.tilitili.spider.util.Convert;
 import com.tilitili.spider.util.QQUtil;
 import com.tilitili.common.entity.view.BaseView;
 import com.tilitili.common.entity.view.tagDetail.TagDetailView;
 import com.tilitili.common.entity.view.view.VideoView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +27,7 @@ import java.util.*;
 
 import static com.tilitili.spider.util.BilibiliApi.getVideoForTagById;
 
+@Slf4j
 @Configuration
 public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements PageProcessor, Pipeline {
     @Value("${spider.wait-time}")
@@ -65,6 +66,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     public Request poll(Task task) {
         if (requestLinkedList.isEmpty()) {
             TaskMessage taskMessage = jmsService.receiveAndConvert(TaskReason.SPIDER_NEW_VIDEO.destination);
+            log.info("receive spider video tag task: {}", taskMessage);
             if (taskMessage == null) { return null;}
             for (int page = 1; page <= 20; page ++) {
                 requestLinkedList.add(new Request(getVideoForTagById(page, taskMessage.getValue(), taskMessage.getId())));
@@ -79,7 +81,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
         Long tagId = Long.valueOf(page.getUrl().regex("tag_id=([^&]+)").get());
         BaseView<TagDetailView> data = JSONObject.parseObject(page.getJson().get(), new TypeReference<BaseView<TagDetailView>>() {});
         if (Objects.equals(data.code, -412)) {
-            Log.error("被风控: ", data);
+            log.error("被风控: {}", data);
             qqUtil.sendRiskError(this.getClass());
             try {
                 Thread.sleep(waitTime * 60 * 1000);
@@ -101,7 +103,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
         Long taskId = resultItems.get("taskId");
         BaseView<TagDetailView> req = resultItems.get("data");
         if (req.code != 0 || req.data == null || req.data.news == null || req.data.news.archives == null) {
-            Log.error("接口返回状态不为0: %s", req);
+            log.error("接口返回状态不为0: {}", req);
             taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), req.message);
             return;
         }
@@ -110,7 +112,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
             videoViewList.parallelStream().map(convert::VideoViewToVideoInfo).forEach(videoInfoManager::updateOrInsert);
             taskMapper.updateStatusById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
         } catch (Exception e) {
-            Log.error("持久化失败, av=" + av, e);
+            log.error("持久化失败, av=" + av, e);
             taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
         }
     }

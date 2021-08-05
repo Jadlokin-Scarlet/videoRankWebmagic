@@ -4,7 +4,7 @@ package com.tilitili.spider.component.view;
 import com.tilitili.common.emnus.TaskStatus;
 import com.tilitili.common.entity.message.TaskMessage;
 import com.tilitili.common.mapper.TaskMapper;
-import com.tilitili.common.utils.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,7 @@ import us.codecraft.webmagic.scheduler.DuplicateRemovedScheduler;
 
 import java.util.LinkedList;
 
+@Slf4j
 @Component
 public class ViewScheduler extends DuplicateRemovedScheduler {
 	private final String getVideoByAV = "https://api.bilibili.com/x/web-interface/view?aid=%s&_id_=%s";
@@ -45,7 +46,7 @@ public class ViewScheduler extends DuplicateRemovedScheduler {
 		if (taskMessage == null) {
 			return null;
 		}
-		Log.info("receive spider video view task: {}", taskMessage);
+		log.info("receive spider video view task: {}", taskMessage);
 		taskMapper.updateStatusById(taskMessage.getId(), TaskStatus.WAIT.getValue(), TaskStatus.SPIDER.getValue());
 
 		return new Request(String.format(getVideoByAV, taskMessage.getValue(), taskMessage.getId()));
