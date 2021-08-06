@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -55,6 +56,7 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
 
     private final JmsService jmsService;
     private final QQUtil qqUtil;
+    private final Environment environment;
 
     private final VideoInfoManager videoInfoManager;
     private final VideoPageManager videoPageManager;
@@ -70,11 +72,12 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     private final ToTmpDataNew toTmpDataNew;
 
     @Autowired
-    public ViewSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, VideoPageManager videoPageManager, OwnerManager ownerManager, OwnerMapper ownerMapper, TmpDataNewMapper tmpDataNewMapper, ToVideoInfo toVideoInfo, ToVideoPage toVideoPage, ToOwner toOwner, ToTmpDataNew toTmpDataNew) {
+    public ViewSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Environment environment, VideoPageManager videoPageManager, OwnerManager ownerManager, OwnerMapper ownerMapper, TmpDataNewMapper tmpDataNewMapper, ToVideoInfo toVideoInfo, ToVideoPage toVideoPage, ToOwner toOwner, ToTmpDataNew toTmpDataNew) {
         this.qqUtil = qqUtil;
         this.videoInfoManager = videoInfoManager;
         this.taskMapper = taskMapper;
         this.jmsService = jmsService;
+        this.environment = environment;
         this.videoPageManager = videoPageManager;
         this.ownerManager = ownerManager;
         this.ownerMapper = ownerMapper;
@@ -128,6 +131,7 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     public void process(ResultItems resultItems, us.codecraft.webmagic.Task task) {
         long id = Long.parseLong(resultItems.get("id"));
         long av = Long.parseLong(resultItems.get("av"));
+        String ip = environment.getProperty("ip");
         BaseView<VideoView> data = resultItems.get("data");
         if (data == null) { return; }
         try {
@@ -166,10 +170,10 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
                 tmpDataNewMapper.updateTmpDataNew(tmpDataNew);
             }
 
-            taskMapper.updateStatusById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
+            taskMapper.updateStatusAndIpById(id, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue(), ip);
         } catch (Exception e) {
             log.error("持久化失败, av=" + av, e);
-            taskMapper.updateStatusAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
+            taskMapper.updateStatusAndIpAndRemarkById(id, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), ip, e.getMessage());
         }
     }
 

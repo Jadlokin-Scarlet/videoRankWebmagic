@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.pipeline.Pipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -47,6 +48,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     private final JmsService jmsService;
     private final Convert convert;
     private final QQUtil qqUtil;
+    private final Environment environment;
 
     @Bean
     public Spider tagDetailSpider(TagDetailSpiderConfig spiderConfig) {
@@ -54,12 +56,13 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     }
 
     @Autowired
-    public TagDetailSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Convert convert) {
+    public TagDetailSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Convert convert, Environment environment) {
         this.qqUtil = qqUtil;
         this.videoInfoManager = videoInfoManager;
         this.taskMapper = taskMapper;
         this.jmsService = jmsService;
         this.convert = convert;
+        this.environment = environment;
     }
 
     @Override
@@ -101,6 +104,7 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
     public void process(ResultItems resultItems, Task task) {
         Long av = resultItems.get("av");
         Long taskId = resultItems.get("taskId");
+        String ip = environment.getProperty("ip");
         BaseView<TagDetailView> req = resultItems.get("data");
         if (req.code != 0 || req.data == null || req.data.news == null || req.data.news.archives == null) {
             log.error("接口返回状态不为0: {}", req);
@@ -110,10 +114,10 @@ public class TagDetailSpiderConfig extends DuplicateRemovedScheduler implements 
         try {
             List<VideoView> videoViewList = req.data.news.archives;
             videoViewList.parallelStream().map(convert::VideoViewToVideoInfo).forEach(videoInfoManager::updateOrInsert);
-            taskMapper.updateStatusById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
+            taskMapper.updateStatusAndIpById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue(), ip);
         } catch (Exception e) {
             log.error("持久化失败, av=" + av, e);
-            taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
+            taskMapper.updateStatusAndIpAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), ip, e.getMessage());
         }
     }
 
