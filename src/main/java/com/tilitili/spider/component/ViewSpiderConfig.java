@@ -47,7 +47,6 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
 
     private final Integer thread = 1;
     private final Boolean exitWhenComplete = false;
-    private final Integer retryTimes = 9000;
     private final Integer sleepTime = 9000;
     private final String charset = "UTF-8";
     private final Set<Integer> acceptStatCode = new HashSet<>(Arrays.asList(412, 200));
@@ -70,6 +69,8 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
     private final ToVideoPage toVideoPage;
     private final ToOwner toOwner;
     private final ToTmpDataNew toTmpDataNew;
+
+    private Date lastSpiderTime = new Date();
 
     @Autowired
     public ViewSpiderConfig(QQUtil qqUtil, VideoInfoManager videoInfoManager, TaskMapper taskMapper, JmsService jmsService, Environment environment, VideoPageManager videoPageManager, OwnerManager ownerManager, OwnerMapper ownerMapper, TmpDataNewMapper tmpDataNewMapper, ToVideoInfo toVideoInfo, ToVideoPage toVideoPage, ToOwner toOwner, ToTmpDataNew toTmpDataNew) {
@@ -101,6 +102,14 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
             log.info("receive spider video view task: {}", taskMessage);
             requestLinkedList.add(new Request(getVideoByAv(taskMessage.getValue(), taskMessage.getId())));
         }
+        if (new Date().getTime() - lastSpiderTime.getTime() < sleepTime) {
+            try {
+                Thread.sleep(Math.max(sleepTime - (new Date().getTime() - lastSpiderTime.getTime()), 0));
+            } catch (InterruptedException e) {
+                log.error("sleep error",e);
+            }
+        }
+        lastSpiderTime = new Date();
         return requestLinkedList.poll();
     }
 
@@ -184,7 +193,7 @@ public class ViewSpiderConfig extends DuplicateRemovedScheduler implements PageP
 
     @Override
     public Site getSite() {
-        return Site.me().setRetryTimes(retryTimes).setSleepTime(sleepTime).setCharset(charset).setAcceptStatCode(acceptStatCode);
+        return Site.me().setRetryTimes(sleepTime).setSleepTime(0).setCharset(charset).setAcceptStatCode(acceptStatCode);
     }
 
 }
