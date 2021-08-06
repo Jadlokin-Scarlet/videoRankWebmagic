@@ -9,6 +9,7 @@ import com.tilitili.common.entity.view.BaseView;
 import com.tilitili.common.entity.view.owner.OwnerView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
@@ -20,23 +21,26 @@ public class OwnerPipeline implements Pipeline {
 	private final OwnerMapper ownerMapper;
 	private final OwnerManager ownerManager;
 	private final TaskMapper taskMapper;
+	private final Environment environment;
 
 	@Autowired
-	public OwnerPipeline(OwnerMapper ownerMapper, OwnerManager ownerManager, TaskMapper taskMapper) {
+	public OwnerPipeline(OwnerMapper ownerMapper, OwnerManager ownerManager, TaskMapper taskMapper, Environment environment) {
 		this.ownerMapper = ownerMapper;
 		this.ownerManager = ownerManager;
 		this.taskMapper = taskMapper;
+		this.environment = environment;
 	}
 
 	@Override
 	public void process(ResultItems resultItems, Task task) {
 		Long uid = resultItems.get("uid");
 		Long taskId = resultItems.get("taskId");
+		String ip = environment.getProperty("ip");
 		BaseView<OwnerView> data = resultItems.get("data");
 		if (data.code != 0) {
 			log.error("接口返回状态不为0: {}", data);
 			ownerMapper.update(new Owner().setUid(uid).setRemark(data.message));
-			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), data.message);
+			taskMapper.updateStatusAndIpAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), ip, data.message);
 			return;
 		}
 		try {
@@ -45,10 +49,10 @@ public class OwnerPipeline implements Pipeline {
 
 			ownerManager.updateOrInsert(owner);
 
-			taskMapper.updateStatusById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue());
+			taskMapper.updateStatusAndIpById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.SUCCESS.getValue(), ip);
 		} catch (Exception e) {
 			log.error("持久化失败, uid=" + uid, e);
-			taskMapper.updateStatusAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), e.getMessage());
+			taskMapper.updateStatusAndIpAndRemarkById(taskId, TaskStatus.SPIDER.getValue(), TaskStatus.FAIL.getValue(), ip, e.getMessage());
 		}
 	}
 }
